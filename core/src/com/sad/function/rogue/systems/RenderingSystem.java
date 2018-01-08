@@ -9,8 +9,10 @@ package com.sad.function.rogue.systems;
 public class RenderingSystem extends BaseSystem {
 
     @Override
-    public void run() {
+    public void run(float delta, EntityManager em) {
         //Get the current ECS
+
+
 
         //Get the global rendering handle.
     }
