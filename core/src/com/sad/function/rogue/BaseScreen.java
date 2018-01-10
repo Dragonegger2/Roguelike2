@@ -4,7 +4,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Disposable;
-import com.sad.function.rogue.components.Position;
+import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.systems.EntityManager;
 
 import java.util.UUID;
@@ -21,7 +21,9 @@ public class BaseScreen implements Disposable {
 
         UUID player = manager.createEntity();
 
-        manager.addComponent(player, new Position(0, 0));
+        TransformComponent playerTransformComponent = new TransformComponent();
+
+        manager.addComponent(player, new TransformComponent());
     }
 
     public void processInput() {

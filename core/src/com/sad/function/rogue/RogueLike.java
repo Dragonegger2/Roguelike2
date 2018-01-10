@@ -12,7 +12,7 @@ public class RogueLike extends ApplicationAdapter {
 	BaseScreen gameScreen;
 
 	@Override
-	public void create () {
+	public void     create () {
 		batch = new SpriteBatch();
 		gameScreen = new BaseScreen();
 	}
