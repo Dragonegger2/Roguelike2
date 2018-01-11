@@ -4,14 +4,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
- * Component for static assets that are rendered to the screen.
+ * Component for static assets that are rendered to the screen.z
  */
 public class SpriteComponent extends Component {
 
     public SpriteComponent() {
         super();
     }
-    public String textureLocation = "badlogic.jpg";
+    public String textureLocation = "player.png";
 
     //Just a mask for static assets.
     private Texture sprite = new Texture(textureLocation);

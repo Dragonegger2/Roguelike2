@@ -62,14 +62,14 @@ public class RenderingSystem extends BaseSystem {
                     em.getComponent(entity, TransformComponent.class).x,
                     em.getComponent(entity, TransformComponent.class).y);
 
-            drawRect(batch,
-                    blueRect,
-                    em.getComponent(entity, TransformComponent.class).x,
-                    em.getComponent(entity, TransformComponent.class).y,
-                    em.getComponent(entity, SpriteComponent.class).Sprite.getTexture().getWidth(),
-                    em.getComponent(entity, SpriteComponent.class).Sprite.getTexture().getHeight(),
-                    10
-                            );
+//            drawRect(batch,
+//                    blueRect,
+//                    em.getComponent(entity, TransformComponent.class).x,
+//                    em.getComponent(entity, TransformComponent.class).y,
+//                    em.getComponent(entity, SpriteComponent.class).Sprite.getTexture().getWidth(),
+//                    em.getComponent(entity, SpriteComponent.class).Sprite.getTexture().getHeight(),
+//                    10
+//                            );
         }
         batch.end();
 
