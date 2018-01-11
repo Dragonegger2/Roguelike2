@@ -1,11 +1,14 @@
 package com.sad.function.rogue;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Disposable;
+import com.sad.function.rogue.components.SpriteComponent;
 import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.systems.EntityManager;
+import com.sad.function.rogue.systems.RenderingSystem;
 
 import java.util.UUID;
 
@@ -15,6 +18,9 @@ public class BaseScreen implements Disposable {
     AssetManager assetManager;
     Texture img;
 
+    //Systems
+    RenderingSystem renderingSystem;
+
     public BaseScreen() {
         manager = new EntityManager();
         img = new Texture("badlogic.jpg");
@@ -22,8 +28,12 @@ public class BaseScreen implements Disposable {
         UUID player = manager.createEntity();
 
         TransformComponent playerTransformComponent = new TransformComponent();
+        SpriteComponent spriteComponent = new SpriteComponent();
 
         manager.addComponent(player, new TransformComponent());
+        manager.addComponent(player, spriteComponent);
+
+        renderingSystem = new RenderingSystem();
     }
 
     public void processInput() {
@@ -34,10 +44,12 @@ public class BaseScreen implements Disposable {
 
     public void update(float delta) {
         //Physics processing. Should add a peek function to the message queue to check for collisions.
+        renderingSystem.run(delta, manager);
     }
 
     public void render(Batch batch) {
-        batch.draw(img, 0,0);
+//        batch.draw(img, 0,0);
+        renderingSystem.run(Gdx.graphics.getDeltaTime(), manager);
     }
 
     @Override

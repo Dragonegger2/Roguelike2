@@ -13,8 +13,8 @@ public class TransformComponent extends Component {
         super();
     }
 
-    public float x;
-    public float y;
+    public float x = 0;
+    public float y = 0;
 
     public float originX = 1.0f;
     public float originY = 1.0f;

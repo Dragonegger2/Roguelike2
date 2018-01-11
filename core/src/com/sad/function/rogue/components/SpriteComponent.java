@@ -12,6 +12,8 @@ public class SpriteComponent extends Component {
         super();
     }
     public String textureLocation = "badlogic.jpg";
+
+    //Just a mask for static assets.
     private Texture sprite = new Texture(textureLocation);
     public TextureRegion Sprite = new TextureRegion(sprite);
 

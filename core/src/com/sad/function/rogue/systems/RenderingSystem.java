@@ -14,8 +14,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.components.SpriteComponent;
+import com.sad.function.rogue.components.TransformComponent;
 
 import java.util.UUID;
 
@@ -48,18 +48,32 @@ public class RenderingSystem extends BaseSystem {
         shape = new ShapeRenderer();
         shape.setAutoShapeType(true);
 
-
-
-
         blueRect = new Texture("blueCollisionBox.png");
         redRect = new Texture("redCollisionBox.png");
     }
 
     @Override
     public void run(float delta, EntityManager em) {
-        Gdx.gl.glClearColor(255,255,255,1);
+        Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.begin();
+        for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] { SpriteComponent.class, TransformComponent.class })) {
+            batch.draw(em.getComponent(entity, SpriteComponent.class).Sprite.getTexture(),
+                    em.getComponent(entity, TransformComponent.class).x,
+                    em.getComponent(entity, TransformComponent.class).y);
 
+            drawRect(batch,
+                    blueRect,
+                    em.getComponent(entity, TransformComponent.class).x,
+                    em.getComponent(entity, TransformComponent.class).y,
+                    em.getComponent(entity, SpriteComponent.class).Sprite.getTexture().getWidth(),
+                    em.getComponent(entity, SpriteComponent.class).Sprite.getTexture().getHeight(),
+                    10
+                            );
+        }
+        batch.end();
+
+/*
         if(camera != null) {
             camera.update();
             batch.setProjectionMatrix(camera.combined);
@@ -97,7 +111,7 @@ public class RenderingSystem extends BaseSystem {
 
         }
         batch.end();
-
+*/
     }
 
     /**
