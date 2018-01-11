@@ -32,8 +32,6 @@ public class RogueLike extends ApplicationAdapter {
         	gameScreen.render(batch);
 
         batch.end();
-
-
     }
 
 	@Override

@@ -1,6 +1,6 @@
 package com.sad.function.rogue.components;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Texture;
 
 /**
  * Component for static assets that are rendered to the screen.
@@ -10,10 +10,8 @@ public class SpriteComponent extends Component {
     public SpriteComponent() {
         super();
     }
-
-    public TextureRegion Sprite;
-
-    public String textureLocation;
+    public String textureLocation = "badlogic.jpg";
+    public Texture Sprite = new Texture(textureLocation);
 
     public float width;
     public float height;
