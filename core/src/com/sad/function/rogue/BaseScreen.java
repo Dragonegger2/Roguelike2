@@ -1,6 +1,7 @@
 package com.sad.function.rogue;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -21,11 +22,13 @@ public class BaseScreen implements Disposable {
     //Systems
     RenderingSystem renderingSystem;
 
+    UUID player;
+
     public BaseScreen() {
         manager = new EntityManager();
         img = new Texture("badlogic.jpg");
 
-        UUID player = manager.createEntity();
+        player = manager.createEntity();
 
         TransformComponent playerTransformComponent = new TransformComponent();
         SpriteComponent spriteComponent = new SpriteComponent();
@@ -37,9 +40,26 @@ public class BaseScreen implements Disposable {
     }
 
     public void processInput() {
+        System.out.println("Getting input...");
         //Query entityManager to get all entities that need input, add events to queue based on the input. Events get consumed in the update loop.
         //That's also where physics should be happening. (If there are physics.)
+        if( Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            //Throw an event! Woot
+            manager.getComponent(player,TransformComponent.class).x -= 1;
+        }
+        else if( Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            //Throw an event! Woot
+            manager.getComponent(player,TransformComponent.class).x += 1;
+        }
+        else if( Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            //Throw an event! Woot
+            manager.getComponent(player,TransformComponent.class).y += 1;
+        }
+        else if( Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            //Throw an event! Woot
+            manager.getComponent(player,TransformComponent.class).y -= 1;
 
+        }
     }
 
     public void update(float delta) {
