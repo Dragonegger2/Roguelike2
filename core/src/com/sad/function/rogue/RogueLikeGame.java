@@ -3,8 +3,10 @@ package com.sad.function.rogue;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sad.function.rogue.screens.BaseScreen;
+import com.sad.function.rogue.screens.GameScreen;
 
-public class RogueLike extends ApplicationAdapter {
+public class RogueLikeGame extends ApplicationAdapter {
 
 	SpriteBatch batch;
 
@@ -13,7 +15,7 @@ public class RogueLike extends ApplicationAdapter {
 	@Override
 	public void     create () {
 		batch = new SpriteBatch();
-		gameScreen = new BaseScreen();
+		gameScreen = new GameScreen();
 	}
 
 	@Override
@@ -24,13 +26,7 @@ public class RogueLike extends ApplicationAdapter {
 
         gameScreen.update(delta);
 
-//		Gdx.gl.glClearColor(1, 0, 0, 1);
-//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//        batch.begin();
-
-        	gameScreen.render(batch);
-
-//        batch.end();
+        gameScreen.render(batch);
     }
 
 	@Override
