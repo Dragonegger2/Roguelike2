@@ -56,9 +56,6 @@ public class GameScreen implements BaseScreen{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        for (GameEntity entity : gameObjects) {
-           entity.draw(batch);
-        }
 
         for(int x = 0; x < map.MAP_WIDTH; x++) {
             for(int y = 0; y < map.MAP_HEIGHT; y++) {
@@ -66,8 +63,16 @@ public class GameScreen implements BaseScreen{
                 if(wall) {
                     batch.draw(map.wall, x * 16, y * 16);
                 }
+                else {
+                    batch.draw(map.floor, x*16, y*16);
+                }
             }
         }
+
+        for (GameEntity entity : gameObjects) {
+            entity.draw(batch);
+        }
+
         batch.end();
     }
 

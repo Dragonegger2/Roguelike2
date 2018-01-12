@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class Map {
     public int MAP_WIDTH = 80;
-    public int MAP_HEIGHT = 45;
+    public int MAP_HEIGHT = 50;
 
     public Tile[][] map;
 
@@ -12,7 +12,7 @@ public class Map {
     public Texture wall = new Texture("DungeonWall.png");
 
     public Map() {
-        map = new Tile[80][45];
+        map = new Tile[MAP_WIDTH][MAP_HEIGHT];
         initializeMap();
     }
 
