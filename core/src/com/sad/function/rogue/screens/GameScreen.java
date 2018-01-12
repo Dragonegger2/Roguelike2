@@ -21,6 +21,8 @@ public class GameScreen implements BaseScreen{
 
     UUID player;
 
+    private UUID[][] map;
+
     public GameScreen() {
         manager = new EntityManager();
 
@@ -47,7 +49,6 @@ public class GameScreen implements BaseScreen{
         }
         else if( Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             manager.getComponent(player,TransformComponent.class).y -= 16;
-
         }
     }
 

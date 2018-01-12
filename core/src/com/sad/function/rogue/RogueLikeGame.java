@@ -22,6 +22,7 @@ public class RogueLikeGame extends ApplicationAdapter {
 	public void render () {
         float delta = Gdx.graphics.getDeltaTime();
 
+        //Add a key dispatcher awaiting key presses that blocks updates until you press a key?
         gameScreen.processInput();
 
         gameScreen.update(delta);
