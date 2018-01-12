@@ -7,6 +7,9 @@ import com.sad.function.rogue.RogueLikeGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.resizable = false;
+		config.width = 16 * 80;
+		config.height = 16 * 50;
 		new LwjglApplication(new RogueLikeGame(), config);
 	}
 }
