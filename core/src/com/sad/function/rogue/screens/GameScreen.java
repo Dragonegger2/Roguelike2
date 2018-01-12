@@ -2,64 +2,73 @@ package com.sad.function.rogue.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.sad.function.rogue.components.SpriteComponent;
-import com.sad.function.rogue.components.TransformComponent;
-import com.sad.function.rogue.systems.EntityManager;
-import com.sad.function.rogue.systems.RenderingSystem;
+import com.sad.function.rogue.objects.GameEntity;
+import com.sad.function.rogue.objects.Map;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameScreen implements BaseScreen{
 
-    EntityManager manager;
-    AssetManager assetManager;
 
-    //Systems
-    RenderingSystem renderingSystem;
+    private Map map = new Map();
 
-    UUID player;
+    private List<GameEntity> gameObjects = new ArrayList<GameEntity>();
+    private GameEntity player;
 
-    private UUID[][] map;
 
     public GameScreen() {
-        manager = new EntityManager();
+        player = new GameEntity(new Texture("player.png"), 0,0);
+        map.map[30][22].blockSight = true;
+        map.map[30][22].blocked = true;
+        map.map[50][22].blockSight = true;
+        map.map[50][22].blocked = true;
 
-        player = manager.createEntity();
-
-        manager.addComponent(player, new TransformComponent());
-        manager.addComponent(player, new SpriteComponent());
-
-        renderingSystem = new RenderingSystem();
+        gameObjects.add(player);
     }
 
     public void processInput() {
-        System.out.println("Getting input...");
         //Query entityManager to get all entities that need input, add events to queue based on the input. Events get consumed in the update loop.
         //That's also where physics should be happening. (If there are physics.)
         if( Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            manager.getComponent(player,TransformComponent.class).x -= 16;
+            player.move(-1, 0, map.map);
         }
         else if( Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            manager.getComponent(player,TransformComponent.class).x += 16;
+            player.move(1, 0, map.map);
         }
         else if( Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            manager.getComponent(player,TransformComponent.class).y += 16;
+            player.move(0, 1, map.map);
         }
         else if( Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            manager.getComponent(player,TransformComponent.class).y -= 16;
+            player.move(0, -1, map.map);
         }
     }
 
     public void update(float delta) {
         //Physics processing. Should add a peek function to the message queue to check for collisions.
-        renderingSystem.run(delta, manager);
     }
 
     public void render(Batch batch) {
-//        batch.draw(img, 0,0);
-        renderingSystem.run(Gdx.graphics.getDeltaTime(), manager);
+        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.begin();
+        for (GameEntity entity : gameObjects) {
+           entity.draw(batch);
+        }
+
+        for(int x = 0; x < map.MAP_WIDTH; x++) {
+            for(int y = 0; y < map.MAP_HEIGHT; y++) {
+                boolean wall = map.map[x][y].blockSight;
+                if(wall) {
+                    batch.draw(map.wall, x * 16, y * 16);
+                }
+            }
+        }
+        batch.end();
     }
 
     @Override
