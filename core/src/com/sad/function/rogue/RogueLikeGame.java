@@ -12,14 +12,11 @@ public class RogueLikeGame extends ApplicationAdapter {
 
 	BaseScreen gameScreen;
 
-	InputManager inputManager = new InputManager();
-
 	@Override
 	public void     create () {
 		batch = new SpriteBatch();
 		gameScreen = new GameScreen();
 
-        Gdx.input.setInputProcessor(inputManager);
     }
 
 	@Override

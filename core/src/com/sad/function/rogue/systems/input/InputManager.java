@@ -1,4 +1,4 @@
-package com.sad.function.rogue;
+package com.sad.function.rogue.systems.input;
 
 import com.badlogic.gdx.InputProcessor;
 
@@ -12,18 +12,6 @@ public class InputManager implements InputProcessor{
 
     private ArrayList<KeyState> managedKeys = new ArrayList<KeyState>();
 
-    /*
-    1. Raw inputs that the game handles.
-        Updates a list of these inputs into a means that can be consumed by...
-
-    2. A list of events or states that these inputs map to.
-       Which is in turn used by...
-
-    3. A list of contexts.
-
-
-
-     */
     public InputManager() {
 
     }
