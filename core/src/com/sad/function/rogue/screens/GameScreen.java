@@ -34,19 +34,19 @@ public class GameScreen implements BaseScreen{
     }
 
     public void processInput() {
-        if( Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
 //            player.move(-1, 0, map.map);
             eventQueue.add(new MoveCommand(-1, 0, map.map, player));
         }
-        else if( Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+        else if( Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
 //            player.move(1, 0, map.map);
             eventQueue.add(new MoveCommand(1, 0, map.map, player));
         }
-        else if( Gdx.input.isKeyPressed(Input.Keys.UP)) {
+        else if( Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
 //            player.move(0, 1, map.map);
             eventQueue.add(new MoveCommand(0,1, map.map, player));
         }
-        else if( Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+        else if( Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
 //            player.move(0, -1, map.map);
             eventQueue.add(new MoveCommand(0, -1, map.map, player));
         }
