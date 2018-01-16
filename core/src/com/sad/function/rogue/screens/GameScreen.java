@@ -19,9 +19,9 @@ public class GameScreen implements BaseScreen{
     private List<GameEntity> gameObjects = new ArrayList<GameEntity>();
     private GameEntity player;
 
-
     public GameScreen() {
         player = new GameEntity(new Texture("player.png"), 0,0);
+
         map.map[30][22].blockSight = true;
         map.map[30][22].blocked = true;
         map.map[50][22].blockSight = true;

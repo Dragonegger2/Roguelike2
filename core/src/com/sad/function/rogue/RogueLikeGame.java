@@ -12,17 +12,20 @@ public class RogueLikeGame extends ApplicationAdapter {
 
 	BaseScreen gameScreen;
 
+	InputManager inputManager = new InputManager();
+
 	@Override
 	public void     create () {
 		batch = new SpriteBatch();
 		gameScreen = new GameScreen();
-	}
+
+        Gdx.input.setInputProcessor(inputManager);
+    }
 
 	@Override
 	public void render () {
         float delta = Gdx.graphics.getDeltaTime();
 
-        //Add a key dispatcher awaiting key presses that blocks updates until you press a key?
         gameScreen.processInput();
 
         gameScreen.update(delta);
