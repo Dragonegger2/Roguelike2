@@ -23,14 +23,15 @@ public class GameScreen implements BaseScreen{
 
     private LinkedList<ICommand> eventQueue = new LinkedList<ICommand>();
 
-    private DungeonGenerator dungeonGenerator = new DungeonGenerator(map.map);
+    private DungeonGenerator dungeonGenerator;
 
     public GameScreen() {
         player = new GameEntity(new Texture("player.png"), 25,23);
+        gameObjects.add(player);
 
+        dungeonGenerator = new DungeonGenerator(map, player);
         dungeonGenerator.make_map();
 
-        gameObjects.add(player);
     }
 
     public void processInput() {

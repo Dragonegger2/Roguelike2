@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Disposable;
 
 public class GameEntity implements Disposable {
-    private int x;
-    private int y;
+    public int x;
+    public int y;
 
     private Texture identifier;
 
