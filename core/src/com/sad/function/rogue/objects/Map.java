@@ -16,6 +16,11 @@ public class Map {
         initializeMap();
     }
 
+    public Map(int width, int height) {
+        MAP_WIDTH = width;
+        MAP_HEIGHT = height;
+    }
+
     private void initializeMap() {
         for( int i = 0; i < MAP_WIDTH; i++ ) {
             for( int j = 0; j < MAP_HEIGHT; j++ ) {

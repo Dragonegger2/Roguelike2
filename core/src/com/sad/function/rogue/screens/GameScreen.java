@@ -26,7 +26,7 @@ public class GameScreen implements BaseScreen{
     private DungeonGenerator dungeonGenerator;
 
     public GameScreen() {
-        player = new GameEntity(new Texture("player.png"), 25,23);
+        player = new GameEntity(new Texture("player.png"), 0,0);
         gameObjects.add(player);
 
         dungeonGenerator = new DungeonGenerator(map, player);

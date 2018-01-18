@@ -39,7 +39,7 @@ public class DungeonGenerator {
         sealDungeon();
 
         //Generate room list.
-        ArrayList<Rect> rooms = new ArrayList<Rect>();
+        ArrayList<Rect> rooms = new ArrayList<>();
         int num_rooms = 0;
 
 
@@ -50,18 +50,21 @@ public class DungeonGenerator {
             int x = ThreadLocalRandom.current().nextInt(0, map.MAP_WIDTH - w - 1);
             int y = ThreadLocalRandom.current().nextInt(0, map.MAP_HEIGHT - h - 1);
 
+            System.out.println( x + " " + y + " " + w + " " + h);
             Rect new_room = new Rect(x, y, w, h);
 
             boolean failed = false;
 
-            for(int j = 0; j < rooms.size(); j++) {
-                if(new_room.intersect(rooms.get(j))) {
+            for (Rect room : rooms) {
+                if (new_room.intersect(room)) {
                     failed = true;
                     break;
                 }
             }
 
+            //If the room did not fail...
             if(!failed) {
+                System.out.println("Room did not overlap!");
                 createRoom(new_room);
 
                 Vector2 newRoomCenter = new_room.center();
@@ -79,15 +82,18 @@ public class DungeonGenerator {
                         createVerticalTunnel((int)previousRoomCenter.y, (int)newRoomCenter.y, (int)newRoomCenter.x );
                     }
                     else {
+                        //First move vertically then horizontally
                         createVerticalTunnel((int)previousRoomCenter.y, (int)newRoomCenter.y, (int)previousRoomCenter.x);
                         createHorizontalTunnel((int)previousRoomCenter.x, (int)newRoomCenter.x, (int)previousRoomCenter.y);
                     }
                 }
+                rooms.add(new_room);
+                num_rooms += 1;
+            }
+            else {
+                System.out.println("Room would overlap!");
             }
         }
-
-
-
     }
 
     private void sealDungeon() {
