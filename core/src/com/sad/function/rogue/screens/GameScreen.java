@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.sad.function.rogue.ICommand;
 import com.sad.function.rogue.MoveCommand;
+import com.sad.function.rogue.dungeon.DungeonGenerator;
 import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.objects.Map;
 
@@ -22,13 +23,12 @@ public class GameScreen implements BaseScreen{
 
     private LinkedList<ICommand> eventQueue = new LinkedList<ICommand>();
 
-    public GameScreen() {
-        player = new GameEntity(new Texture("player.png"), 0,0);
+    private DungeonGenerator dungeonGenerator = new DungeonGenerator(map.map);
 
-        map.map[30][22].blockSight = true;
-        map.map[30][22].blocked = true;
-        map.map[50][22].blockSight = true;
-        map.map[50][22].blocked = true;
+    public GameScreen() {
+        player = new GameEntity(new Texture("player.png"), 25,23);
+
+        dungeonGenerator.make_map();
 
         gameObjects.add(player);
     }
