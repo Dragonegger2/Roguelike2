@@ -8,8 +8,10 @@ public class Map {
 
     public Tile[][] map;
 
-    public Texture floor = new Texture("DungeonFloor.png");
-    public Texture wall = new Texture("DungeonWall.png");
+    public Texture floorLit = new Texture("DungeonFloorLight.png");
+    public Texture wallLit = new Texture("DungeonWallLight.png");
+    public Texture floorDark = new Texture("DungeonFloorDark.png");
+    public Texture wallDark = new Texture("DungeonFloorDark.png");
 
     public Map() {
         map = new Tile[MAP_WIDTH][MAP_HEIGHT];

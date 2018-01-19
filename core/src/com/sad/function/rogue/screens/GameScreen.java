@@ -18,10 +18,10 @@ import java.util.List;
 public class GameScreen implements BaseScreen{
     private Map map = new Map();
 
-    private List<GameEntity> gameObjects = new ArrayList<GameEntity>();
+    private List<GameEntity> gameObjects = new ArrayList<>();
     private GameEntity player;
 
-    private LinkedList<ICommand> eventQueue = new LinkedList<ICommand>();
+    private LinkedList<ICommand> eventQueue = new LinkedList<>();
 
     private DungeonGenerator dungeonGenerator;
 
@@ -74,10 +74,10 @@ public class GameScreen implements BaseScreen{
             for(int y = 0; y < map.MAP_HEIGHT; y++) {
                 boolean wall = map.map[x][y].blockSight;
                 if(wall) {
-                    batch.draw(map.wall, x * 16, y * 16);
+                    batch.draw(map.wallLit, x * 16, y * 16);
                 }
                 else {
-                    batch.draw(map.floor, x*16, y*16);
+                    batch.draw(map.floorDark, x*16, y*16);
                 }
             }
         }
