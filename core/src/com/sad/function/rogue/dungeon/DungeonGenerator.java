@@ -5,7 +5,7 @@ import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.objects.Map;
 import com.sad.function.rogue.objects.Tile;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DungeonGenerator {
@@ -39,9 +39,7 @@ public class DungeonGenerator {
         sealDungeon();
 
         //Generate room list.
-        ArrayList<Rect> rooms = new ArrayList<>();
-        int num_rooms = 0;
-
+        LinkedList<Rect> rooms = new LinkedList<>();
 
         for(int i = 0; i < MAX_ROOMS; i++ ) {
 
@@ -50,7 +48,6 @@ public class DungeonGenerator {
             int x = ThreadLocalRandom.current().nextInt(0, map.MAP_WIDTH - w - 1);
             int y = ThreadLocalRandom.current().nextInt(0, map.MAP_HEIGHT - h - 1);
 
-            System.out.println( x + " " + y + " " + w + " " + h);
             Rect new_room = new Rect(x, y, w, h);
 
             boolean failed = false;
@@ -64,17 +61,19 @@ public class DungeonGenerator {
 
             //If the room did not fail...
             if(!failed) {
-                System.out.println("Room did not overlap!");
                 createRoom(new_room);
 
                 Vector2 newRoomCenter = new_room.center();
 
-                if(num_rooms == 0) {
+                //Put the player in the first location.
+                if(rooms.size() == 0) {
                     player.x = (int) newRoomCenter.x;
                     player.y = (int) newRoomCenter.y;
                 }
+
+                //For all other
                 else {
-                    Vector2 previousRoomCenter = rooms.get(num_rooms - 1).center();
+                    Vector2 previousRoomCenter = rooms.getLast().center();
 
                     if(ThreadLocalRandom.current().nextInt(0, 1) == 1) {
                         //First move horizontally then vertically.
@@ -84,14 +83,10 @@ public class DungeonGenerator {
                     else {
                         //First move vertically then horizontally
                         createVerticalTunnel((int)previousRoomCenter.y, (int)newRoomCenter.y, (int)previousRoomCenter.x);
-                        createHorizontalTunnel((int)previousRoomCenter.x, (int)newRoomCenter.x, (int)previousRoomCenter.y);
+                        createHorizontalTunnel((int)previousRoomCenter.x, (int)newRoomCenter.x, (int)newRoomCenter.y);
                     }
                 }
                 rooms.add(new_room);
-                num_rooms += 1;
-            }
-            else {
-                System.out.println("Room would overlap!");
             }
         }
     }
