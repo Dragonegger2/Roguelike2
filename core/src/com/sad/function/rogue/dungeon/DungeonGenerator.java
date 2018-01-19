@@ -112,7 +112,7 @@ public class DungeonGenerator {
     }
 
     private void createVerticalTunnel(int y1, int y2, int x) {
-        for(int y = Math.min(y1, y2); x < Math.max(y1, y2) + 1; y++ ) {
+        for(int y = Math.min(y1, y2); y < Math.max(y1, y2) + 1; y++ ) {
             map.map[x][y].blockSight = false;
             map.map[x][y].blocked = false;
         }

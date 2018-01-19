@@ -26,7 +26,7 @@ public class GameScreen implements BaseScreen{
     private DungeonGenerator dungeonGenerator;
 
     public GameScreen() {
-        player = new GameEntity(new Texture("player.png"), 0,0);
+        player = new GameEntity(new Texture("player3.png"), 0,0);
         gameObjects.add(player);
 
         dungeonGenerator = new DungeonGenerator(map, player);
@@ -50,6 +50,9 @@ public class GameScreen implements BaseScreen{
         else if( Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
 //            player.move(0, -1, map.map);
             eventQueue.add(new MoveCommand(0, -1, map.map, player));
+        }
+        else if ( Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
+            dungeonGenerator.make_map();
         }
     }
 
