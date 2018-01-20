@@ -10,6 +10,7 @@ import com.sad.function.rogue.MoveCommand;
 import com.sad.function.rogue.dungeon.DungeonGenerator;
 import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.objects.Map;
+import com.sad.function.rogue.visibility.ShadowCastVisibility;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -25,6 +26,9 @@ public class GameScreen implements BaseScreen{
 
     private DungeonGenerator dungeonGenerator;
 
+    private final static int TORCH_RADIUS = 10;
+    private ShadowCastVisibility fovCalculator;
+
     public GameScreen() {
         player = new GameEntity(new Texture("player3.png"), 0,0);
         gameObjects.add(player);
@@ -32,6 +36,7 @@ public class GameScreen implements BaseScreen{
         dungeonGenerator = new DungeonGenerator(map, player);
         dungeonGenerator.make_map();
 
+        fovCalculator = new ShadowCastVisibility(map);
     }
 
     public void processInput() {
