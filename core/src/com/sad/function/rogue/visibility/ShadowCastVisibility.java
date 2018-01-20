@@ -10,7 +10,22 @@ public class ShadowCastVisibility extends Visibility {
 
     public ShadowCastVisibility(Map mapObject) {
         referenceMap = mapObject;
-        this.fieldOfViewMap = new boolean[mapObject.MAP_WIDTH][mapObject.MAP_HEIGHT];
+
+        SetMap(mapObject);
+    }
+
+    /**
+     * Sets the map object that ShadowCastVisibility will use for calculations.
+     *
+     * Allows me to reuse the calculator object over and over again without needing to recreate one;
+     * I just pass a new map to it and it will begin calculating shadows for me.
+     *
+     * @param map
+     */
+    public void SetMap(Map map) {
+        this.referenceMap = map;
+
+        this.fieldOfViewMap = new boolean[referenceMap.MAP_WIDTH][referenceMap.MAP_HEIGHT];
 
         //Set nothing visible by default.
         for(int x = 0; x < fieldOfViewMap.length; x++) {
@@ -20,15 +35,17 @@ public class ShadowCastVisibility extends Visibility {
         }
     }
 
+
     @Override
-    public boolean[][] Compute(LevelPoint origin, int rangeLimit) {
+    public void Compute(int playerX, int playerY, int rangeLimit) {
+
+        LevelPoint origin = new LevelPoint(playerX, playerY);
+
         fieldOfViewMap[origin.x][origin.y] = true;
 
         for(int octant = 0; octant < 8; octant++ ) {
             Compute(octant, origin, rangeLimit, 1, new Slope(1,1), new Slope(0, 1));
         }
-
-        return fieldOfViewMap;
     }
 
     private void Compute(int octant, LevelPoint origin, int rangeLimit, int x, Slope top, Slope bottom) {
@@ -92,7 +109,20 @@ public class ShadowCastVisibility extends Visibility {
         /**
          * Helper method.
          */
-    public void setVisible(int x, int y) {
-        fieldOfViewMap[x][y] = true;
+    private void setVisible(int x, int y) {
+        try {
+            fieldOfViewMap[x][y] = true;
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+
+        }
     }
+
+    /**
+     * returns whether the passed coordinate is visible.
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean isVisible(int x, int y) { return fieldOfViewMap[x][y]; }
 }

@@ -37,4 +37,21 @@ public class Rect {
                y1 <= other.y2 && y2 >= other.y1;
 
     }
+
+    public int Left() {
+        return x1;
+    }
+
+    public int Right() {
+        return x2;
+    }
+
+    public int Top()
+    {
+        return y1;
+    }
+
+    public int Bottom() {
+        return y2;
+    }
 }
