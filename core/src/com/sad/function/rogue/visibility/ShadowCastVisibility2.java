@@ -4,11 +4,11 @@ import com.sad.function.rogue.dungeon.HelperFunctions;
 import com.sad.function.rogue.dungeon.LevelPoint;
 import com.sad.function.rogue.objects.Map;
 
-public class ShadowCastVisibility extends Visibility {
+public class ShadowCastVisibility2 extends Visibility {
     private Map referenceMap;
     private boolean[][] fieldOfViewMap;
 
-    public ShadowCastVisibility(Map mapObject) {
+    public ShadowCastVisibility2(Map mapObject) {
         referenceMap = mapObject;
 
         SetMap(mapObject);
@@ -74,9 +74,10 @@ public class ShadowCastVisibility extends Visibility {
                     case 7: tx += x; ty += y; break;
                 }
 
-                boolean inRange = rangeLimit < 0 || HelperFunctions.getDistance(new LevelPoint(tx, ty)) <= rangeLimit;
+                boolean inRange = rangeLimit < 0 || HelperFunctions.getDistance(origin, new LevelPoint(tx, ty)) <= rangeLimit;
 
-                if(inRange) setVisible(tx, ty);
+//                if(inRange) setVisible(tx, ty);
+                if(inRange && (y != topY || top.Y*x >= top.X*y) && (y != bottomY || bottom.Y*x <= bottom.X*y)) setVisible(tx, ty);
                 boolean isOpaque = !inRange || blocksLight(tx, ty);
 
                 if( x != rangeLimit) {

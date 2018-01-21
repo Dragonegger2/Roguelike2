@@ -4,11 +4,11 @@ import com.sad.function.rogue.dungeon.HelperFunctions;
 import com.sad.function.rogue.dungeon.LevelPoint;
 import com.sad.function.rogue.objects.Map;
 
-public class ShadowCastVisibility extends Visibility {
+public class PermissiveVisibility extends Visibility {
     private Map referenceMap;
     private boolean[][] fieldOfViewMap;
 
-    public ShadowCastVisibility(Map mapObject) {
+    public PermissiveVisibility(Map mapObject) {
         referenceMap = mapObject;
 
         SetMap(mapObject);
@@ -39,14 +39,8 @@ public class ShadowCastVisibility extends Visibility {
     @Override
     public void Compute(int playerX, int playerY, int rangeLimit) {
 
-        LevelPoint origin = new LevelPoint(playerX, playerY);
-
-        fieldOfViewMap[origin.x][origin.y] = true;
-
-        for(int octant = 0; octant < 8; octant++ ) {
-            Compute(octant, origin, rangeLimit, 1, new Slope(1,1), new Slope(0, 1));
-        }
     }
+
     private boolean blocksLight(int x, int y) {
         try {
             return referenceMap.map[x][y].blockSight;
@@ -55,6 +49,7 @@ public class ShadowCastVisibility extends Visibility {
             return false;
         }
     }
+
     private void Compute(int octant, LevelPoint origin, int rangeLimit, int x, Slope top, Slope bottom) {
         for(; x <= rangeLimit; x++) {
             int topY = top.X ==1 ? x: ((x*2+1) * top.Y + top.X - 1)/ (top.X*2);
@@ -113,9 +108,9 @@ public class ShadowCastVisibility extends Visibility {
         public Slope(int y, int x) { Y = y; X = x; }
     }
 
-        /**
-         * Helper method.
-         */
+    /**
+     * Helper method.
+     */
     private void setVisible(int x, int y) {
         try {
             fieldOfViewMap[x][y] = true;

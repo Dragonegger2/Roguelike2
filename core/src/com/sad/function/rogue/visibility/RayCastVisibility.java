@@ -50,7 +50,12 @@ public class RayCastVisibility extends Visibility {
                 area.intersect(new Rect(origin.x-rangeLimit, origin.y-rangeLimit, rangeLimit*2+1, rangeLimit*2+1));
             }
             for(int x = area.Left(); x<area.Right(); x++) {
-
+                TraceLine(origin, x, area.Top(), rangeLimit);
+                TraceLine(origin, x, area.Bottom() - 1, rangeLimit);
+            }
+            for(int y=area.Top() +1; y< area.Bottom()-1; y++) {
+                TraceLine(origin, area.Left(), y, rangeLimit);
+                TraceLine(origin, area.Right() - 1, y, rangeLimit);
             }
         }
     }
@@ -78,10 +83,11 @@ public class RayCastVisibility extends Visibility {
             int x = index & 0xFFFF, y = index >> 16;
             if(rangeLimit >= 0 && HelperFunctions.getDistance(origin.x, origin.y, x, y) > rangeLimit) break;
             setVisible(x, y);
-            if(referenceMap.map[x][y].blocksLight) break;
+            if(referenceMap.map[x][y].blockSight) break;
         }
 
     }
+
     private void setVisible(int x, int y) {
         fieldOfViewMap[x][y] = true;
     }

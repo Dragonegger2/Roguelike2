@@ -100,12 +100,10 @@ public class GameScreen implements BaseScreen{
                     if( wall ) {
                         //dark wall
                         batch.draw(map.wallDark, x * 16, y * 16);
-
                     }
                     else {
                         //dark ground
                         batch.draw(map.floorDark, x * 16, y * 16);
-
                     }
                 }
                 else {
