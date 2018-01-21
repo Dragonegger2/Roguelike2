@@ -1,6 +1,5 @@
 package com.sad.function.rogue.visibility;
 
-import com.badlogic.gdx.math.Rectangle;
 import com.sad.function.rogue.dungeon.HelperFunctions;
 import com.sad.function.rogue.dungeon.LevelPoint;
 import com.sad.function.rogue.dungeon.Rect;
@@ -29,6 +28,10 @@ public class RayCastVisibility extends Visibility {
 
         this.fieldOfViewMap = new boolean[referenceMap.MAP_WIDTH][referenceMap.MAP_HEIGHT];
 
+        emptyFOV();
+    }
+
+    private void emptyFOV() {
         //Set nothing visible by default.
         for(int x = 0; x < fieldOfViewMap.length; x++) {
             for(int y = 0; y < fieldOfViewMap[x].length; y++) {
@@ -37,9 +40,10 @@ public class RayCastVisibility extends Visibility {
         }
     }
 
-
     @Override
     public void Compute(int playerX, int playerY, int rangeLimit) {
+        emptyFOV();
+
         LevelPoint origin = new LevelPoint(playerX, playerY);
 
         setVisible(playerX, playerY);

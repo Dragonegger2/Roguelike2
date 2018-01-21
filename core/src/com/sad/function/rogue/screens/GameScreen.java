@@ -46,23 +46,19 @@ public class GameScreen implements BaseScreen{
 
     public void processInput() {
         if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-//            player.move(-1, 0, map.map);
             eventQueue.add(new MoveCommand(-1, 0, map.map, player));
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-//            player.move(1, 0, map.map);
             eventQueue.add(new MoveCommand(1, 0, map.map, player));
             fovRecompute = true;
 
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-//            player.move(0, 1, map.map);
             eventQueue.add(new MoveCommand(0,1, map.map, player));
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-//            player.move(0, -1, map.map);
             eventQueue.add(new MoveCommand(0, -1, map.map, player));
             fovRecompute = true;
 
@@ -73,15 +69,17 @@ public class GameScreen implements BaseScreen{
     }
 
     public void update(float delta) {
+
         //Process event queue.
         while(!eventQueue.isEmpty()) {
             eventQueue.removeFirst().Execute();
         }
+
     }
 
     public void render(Batch batch) {
 
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if(fovRecompute) {
@@ -96,22 +94,26 @@ public class GameScreen implements BaseScreen{
                 boolean visible = fovCalculator.isVisible(x, y);
                 boolean wall = map.map[x][y].blockSight;
                 if(!visible) {
-                    //Outside of FOV
-                    if( wall ) {
-                        //dark wall
-                        batch.draw(map.wallDark, x * 16, y * 16);
-                    }
-                    else {
-                        //dark ground
-                        batch.draw(map.floorDark, x * 16, y * 16);
+                    //Players can't see these things if they aren't explored.
+                    if(map.map[x][y].explored) {
+                        //Outside of FOV
+                        if (wall) {
+                            //dark wall
+                            batch.draw(map.wallDark, x * 16, y * 16);
+                        } else {
+                            //dark ground
+                            batch.draw(map.floorDark, x * 16, y * 16);
+                        }
                     }
                 }
                 else {
+                    //Player can see it.
                     if (wall) {
                         batch.draw(map.wallLit, x * 16, y * 16);
                     } else {
                         batch.draw(map.floorLit, x * 16, y * 16);
                     }
+                    map.map[x][y].explored = true;
                 }
             }
         }

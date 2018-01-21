@@ -11,7 +11,7 @@ public class Map {
     public Texture floorLit = new Texture("DungeonFloorLight.png");
     public Texture wallLit = new Texture("DungeonWallLight.png");
     public Texture floorDark = new Texture("DungeonFloorDark.png");
-    public Texture wallDark = new Texture("DungeonFloorDark.png");
+    public Texture wallDark = new Texture("DungeonWallDark.png");
 
     public Map() {
         map = new Tile[MAP_WIDTH][MAP_HEIGHT];
