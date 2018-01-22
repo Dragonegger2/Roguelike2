@@ -8,11 +8,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.sad.function.rogue.ICommand;
 import com.sad.function.rogue.MoveCommand;
 import com.sad.function.rogue.dungeon.DungeonGenerator;
-import com.sad.function.rogue.dungeon.LevelPoint;
 import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.objects.Map;
 import com.sad.function.rogue.visibility.RayCastVisibility;
-import com.sad.function.rogue.visibility.ShadowCastVisibility;
 import com.sad.function.rogue.visibility.Visibility;
 
 import java.util.ArrayList;
@@ -39,7 +37,7 @@ public class GameScreen implements BaseScreen{
         gameObjects.add(player);
 
         dungeonGenerator = new DungeonGenerator(map, player);
-        dungeonGenerator.make_map();
+        dungeonGenerator.makeMap();
 
         fovCalculator = new RayCastVisibility(map);
     }
@@ -64,7 +62,7 @@ public class GameScreen implements BaseScreen{
 
         }
 //        else if ( Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
-//            dungeonGenerator.make_map();
+//            dungeonGenerator.makeMap();
 //        }
     }
 

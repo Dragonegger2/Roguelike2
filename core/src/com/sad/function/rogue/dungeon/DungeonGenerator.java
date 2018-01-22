@@ -16,6 +16,7 @@ public class DungeonGenerator {
     public static final int ROOM_MIN_SIZE = 6;
     public static final int MAX_ROOMS = 30;
 
+    public static final int MAX_ROOM_MOONSTERS = 3;
 
     public DungeonGenerator(Map map, GameEntity player) {
         this.map = map;
@@ -35,7 +36,7 @@ public class DungeonGenerator {
         }
     }
 
-    public void make_map() {
+    public void makeMap() {
         sealDungeon();
 
         //Generate room list.
@@ -110,6 +111,17 @@ public class DungeonGenerator {
         for(int y = Math.min(y1, y2); y < Math.max(y1, y2) + 1; y++ ) {
             map.map[x][y].blockSight = false;
             map.map[x][y].blocked = false;
+        }
+    }
+
+    private void placeObjects(Rect room) {
+        int numberOfMonsterToGenerate = ThreadLocalRandom.current().nextInt(0, MAX_ROOM_MOONSTERS);
+
+        for(int i = 0; i < numberOfMonsterToGenerate; i++ ) {
+            int x = ThreadLocalRandom.current().nextInt(room.x1, room.x2);
+            int y = ThreadLocalRandom.current().nextInt(room.y1, room.y2);
+
+            //TODO:Roll for monster creation.
         }
     }
 
