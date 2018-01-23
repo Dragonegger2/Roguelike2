@@ -3,30 +3,30 @@ package com.sad.function.rogue.visibility;
 import com.sad.function.rogue.dungeon.HelperFunctions;
 import com.sad.function.rogue.dungeon.LevelPoint;
 import com.sad.function.rogue.dungeon.Rect;
-import com.sad.function.rogue.objects.Map;
+import com.sad.function.rogue.objects.Dungeon;
 
 public class RayCastVisibility extends Visibility {
-    private Map referenceMap;
+    private Dungeon referenceDungeon;
     private boolean[][] fieldOfViewMap;
 
-    public RayCastVisibility(Map mapObject) {
-        referenceMap = mapObject;
+    public RayCastVisibility(Dungeon dungeonObject) {
+        referenceDungeon = dungeonObject;
 
-        SetMap(mapObject);
+        SetMap(dungeonObject);
     }
 
     /**
-     * Sets the map object that ShadowCastVisibility will use for calculations.
+     * Sets the dungeon object that ShadowCastVisibility will use for calculations.
      *
      * Allows me to reuse the calculator object over and over again without needing to recreate one;
-     * I just pass a new map to it and it will begin calculating shadows for me.
+     * I just pass a new dungeon to it and it will begin calculating shadows for me.
      *
-     * @param map
+     * @param dungeon
      */
-    public void SetMap(Map map) {
-        this.referenceMap = map;
+    public void SetMap(Dungeon dungeon) {
+        this.referenceDungeon = dungeon;
 
-        this.fieldOfViewMap = new boolean[referenceMap.MAP_WIDTH][referenceMap.MAP_HEIGHT];
+        this.fieldOfViewMap = new boolean[referenceDungeon.MAP_WIDTH][referenceDungeon.MAP_HEIGHT];
 
         emptyFOV();
     }
@@ -49,7 +49,7 @@ public class RayCastVisibility extends Visibility {
         setVisible(playerX, playerY);
 
         if(rangeLimit != 0) {
-            Rect area = new Rect(0, 0, referenceMap.MAP_WIDTH, referenceMap.MAP_HEIGHT);
+            Rect area = new Rect(0, 0, referenceDungeon.MAP_WIDTH, referenceDungeon.MAP_HEIGHT);
             if(rangeLimit >= 0 ) {
                 area.intersect(new Rect(origin.x-rangeLimit, origin.y-rangeLimit, rangeLimit*2+1, rangeLimit*2+1));
             }
@@ -87,7 +87,7 @@ public class RayCastVisibility extends Visibility {
             int x = index & 0xFFFF, y = index >> 16;
             if(rangeLimit >= 0 && HelperFunctions.getDistance(origin.x, origin.y, x, y) > rangeLimit) break;
             setVisible(x, y);
-            if(referenceMap.map[x][y].blockSight) break;
+            if(referenceDungeon.map[x][y].blockSight) break;
         }
 
     }

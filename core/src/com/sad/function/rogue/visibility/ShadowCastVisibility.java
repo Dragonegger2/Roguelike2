@@ -2,30 +2,30 @@ package com.sad.function.rogue.visibility;
 
 import com.sad.function.rogue.dungeon.HelperFunctions;
 import com.sad.function.rogue.dungeon.LevelPoint;
-import com.sad.function.rogue.objects.Map;
+import com.sad.function.rogue.objects.Dungeon;
 
 public class ShadowCastVisibility extends Visibility {
-    private Map referenceMap;
+    private Dungeon referenceDungeon;
     private boolean[][] fieldOfViewMap;
 
-    public ShadowCastVisibility(Map mapObject) {
-        referenceMap = mapObject;
+    public ShadowCastVisibility(Dungeon dungeonObject) {
+        referenceDungeon = dungeonObject;
 
-        SetMap(mapObject);
+        SetMap(dungeonObject);
     }
 
     /**
-     * Sets the map object that ShadowCastVisibility will use for calculations.
+     * Sets the dungeon object that ShadowCastVisibility will use for calculations.
      *
      * Allows me to reuse the calculator object over and over again without needing to recreate one;
-     * I just pass a new map to it and it will begin calculating shadows for me.
+     * I just pass a new dungeon to it and it will begin calculating shadows for me.
      *
-     * @param map
+     * @param dungeon
      */
-    public void SetMap(Map map) {
-        this.referenceMap = map;
+    public void SetMap(Dungeon dungeon) {
+        this.referenceDungeon = dungeon;
 
-        this.fieldOfViewMap = new boolean[referenceMap.MAP_WIDTH][referenceMap.MAP_HEIGHT];
+        this.fieldOfViewMap = new boolean[referenceDungeon.MAP_WIDTH][referenceDungeon.MAP_HEIGHT];
 
         //Set nothing visible by default.
         for(int x = 0; x < fieldOfViewMap.length; x++) {
@@ -49,7 +49,7 @@ public class ShadowCastVisibility extends Visibility {
     }
     private boolean blocksLight(int x, int y) {
         try {
-            return referenceMap.map[x][y].blockSight;
+            return referenceDungeon.map[x][y].blockSight;
         }
         catch(IndexOutOfBoundsException e) {
             return false;

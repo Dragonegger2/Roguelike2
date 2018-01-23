@@ -2,14 +2,14 @@ package com.sad.function.rogue.dungeon;
 
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.rogue.objects.GameEntity;
-import com.sad.function.rogue.objects.Map;
+import com.sad.function.rogue.objects.Dungeon;
 import com.sad.function.rogue.objects.Tile;
 
 import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DungeonGenerator {
-    public Map map;
+    public Dungeon dungeon;
     public GameEntity player;
 
     public static final int ROOM_MAX_SIZE = 10;
@@ -18,20 +18,20 @@ public class DungeonGenerator {
 
     public static final int MAX_ROOM_MOONSTERS = 3;
 
-    public DungeonGenerator(Map map, GameEntity player) {
-        this.map = map;
+    public DungeonGenerator(Dungeon dungeon, GameEntity player) {
+        this.dungeon = dungeon;
         this.player = player;
     }
 
     /**
-     * Carve a room out of the map object.
+     * Carve a room out of the dungeon object.
      * @param room Accepts a rect object which describes a room.
      */
     public void createRoom(Rect room) {
         for(int x = room.x1 + 1; x < room.x2; x++) {
             for(int y = room.y1 + 1; y < room.y2; y++ ) {
-                map.map[x][y].blocked = false;
-                map.map[x][y].blockSight = false;
+                dungeon.map[x][y].blocked = false;
+                dungeon.map[x][y].blockSight = false;
             }
         }
     }
@@ -46,8 +46,8 @@ public class DungeonGenerator {
 
             int w = ThreadLocalRandom.current().nextInt(ROOM_MIN_SIZE, ROOM_MAX_SIZE);
             int h = ThreadLocalRandom.current().nextInt(ROOM_MIN_SIZE, ROOM_MAX_SIZE);
-            int x = ThreadLocalRandom.current().nextInt(0, map.MAP_WIDTH - w - 1);
-            int y = ThreadLocalRandom.current().nextInt(0, map.MAP_HEIGHT - h - 1);
+            int x = ThreadLocalRandom.current().nextInt(0, dungeon.MAP_WIDTH - w - 1);
+            int y = ThreadLocalRandom.current().nextInt(0, dungeon.MAP_HEIGHT - h - 1);
 
             Rect new_room = new Rect(x, y, w, h);
 
@@ -93,24 +93,24 @@ public class DungeonGenerator {
     }
 
     private void sealDungeon() {
-        for(int x = 0; x < map.map.length; x++) {
-            for(int y = 0; y < map.map[x].length; y++ ) {
-                map.map[x][y] = new Tile(true);
+        for(int x = 0; x < dungeon.map.length; x++) {
+            for(int y = 0; y < dungeon.map[x].length; y++ ) {
+                dungeon.map[x][y] = new Tile(true);
             }
         }
     }
 
     private void createHorizontalTunnel(int x1, int x2, int y) {
         for(int x = Math.min(x1, x2); x < Math.max(x1, x2) + 1; x++ ) {
-            map.map[x][y].blockSight = false;
-            map.map[x][y].blocked = false;
+            dungeon.map[x][y].blockSight = false;
+            dungeon.map[x][y].blocked = false;
         }
     }
 
     private void createVerticalTunnel(int y1, int y2, int x) {
         for(int y = Math.min(y1, y2); y < Math.max(y1, y2) + 1; y++ ) {
-            map.map[x][y].blockSight = false;
-            map.map[x][y].blocked = false;
+            dungeon.map[x][y].blockSight = false;
+            dungeon.map[x][y].blocked = false;
         }
     }
 
