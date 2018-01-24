@@ -5,43 +5,26 @@ import com.sad.function.rogue.dungeon.LevelPoint;
 import com.sad.function.rogue.dungeon.Rect;
 import com.sad.function.rogue.objects.Dungeon;
 
-public class RayCastVisibility extends Visibility {
-    private Dungeon referenceDungeon;
-    private boolean[][] fieldOfViewMap;
+public class RayCastVisibility {
+    boolean[][] fieldOfViewMap;
 
-    public RayCastVisibility(Dungeon dungeonObject) {
-        referenceDungeon = dungeonObject;
-
-        SetMap(dungeonObject);
+    public RayCastVisibility() {
     }
 
-    /**
-     * Sets the dungeon object that ShadowCastVisibility will use for calculations.
-     *
-     * Allows me to reuse the calculator object over and over again without needing to recreate one;
-     * I just pass a new dungeon to it and it will begin calculating shadows for me.
-     *
-     * @param dungeon
-     */
-    public void SetMap(Dungeon dungeon) {
-        this.referenceDungeon = dungeon;
-
-        this.fieldOfViewMap = new boolean[referenceDungeon.MAP_WIDTH][referenceDungeon.MAP_HEIGHT];
-
-        emptyFOV();
-    }
-
-    private void emptyFOV() {
+    private boolean[][] emptyFOV() {
         //Set nothing visible by default.
         for(int x = 0; x < fieldOfViewMap.length; x++) {
             for(int y = 0; y < fieldOfViewMap[x].length; y++) {
                 fieldOfViewMap[x][y] = false;
             }
         }
+
+        return fieldOfViewMap;
     }
 
-    @Override
-    public void Compute(int playerX, int playerY, int rangeLimit) {
+    public void Compute(Dungeon dungeon, int playerX, int playerY, int rangeLimit) {
+        fieldOfViewMap = new boolean[dungeon.MAP_WIDTH][dungeon.MAP_HEIGHT];
+
         emptyFOV();
 
         LevelPoint origin = new LevelPoint(playerX, playerY);
@@ -49,22 +32,22 @@ public class RayCastVisibility extends Visibility {
         setVisible(playerX, playerY);
 
         if(rangeLimit != 0) {
-            Rect area = new Rect(0, 0, referenceDungeon.MAP_WIDTH, referenceDungeon.MAP_HEIGHT);
+            Rect area = new Rect(0, 0, dungeon.MAP_WIDTH, dungeon.MAP_HEIGHT);
             if(rangeLimit >= 0 ) {
                 area.intersect(new Rect(origin.x-rangeLimit, origin.y-rangeLimit, rangeLimit*2+1, rangeLimit*2+1));
             }
             for(int x = area.Left(); x<area.Right(); x++) {
-                TraceLine(origin, x, area.Top(), rangeLimit);
-                TraceLine(origin, x, area.Bottom() - 1, rangeLimit);
+                TraceLine(origin, x, area.Top(), rangeLimit, dungeon);
+                TraceLine(origin, x, area.Bottom() - 1, rangeLimit, dungeon);
             }
             for(int y=area.Top() +1; y< area.Bottom()-1; y++) {
-                TraceLine(origin, area.Left(), y, rangeLimit);
-                TraceLine(origin, area.Right() - 1, y, rangeLimit);
+                TraceLine(origin, area.Left(), y, rangeLimit, dungeon);
+                TraceLine(origin, area.Right() - 1, y, rangeLimit, dungeon);
             }
         }
     }
 
-    private void TraceLine(LevelPoint origin, int x2, int y2, int rangeLimit) {
+    private void TraceLine(LevelPoint origin, int x2, int y2, int rangeLimit, Dungeon dungeon) {
         int xDiff = x2 - origin.x, yDiff = y2 - origin.y, xLen = Math.abs(xDiff), yLen = Math.abs(yDiff);
         int xInc = (int)Math.signum(xDiff), yInc = ((int)Math.signum(yDiff))<<16, index = (origin.y<<16) + origin.x;
         if(xLen < yLen) // make sure we walk along the long axis
@@ -87,7 +70,7 @@ public class RayCastVisibility extends Visibility {
             int x = index & 0xFFFF, y = index >> 16;
             if(rangeLimit >= 0 && HelperFunctions.getDistance(origin.x, origin.y, x, y) > rangeLimit) break;
             setVisible(x, y);
-            if(referenceDungeon.map[x][y].blockSight) break;
+            if(dungeon.map[x][y].blockSight) break;
         }
 
     }

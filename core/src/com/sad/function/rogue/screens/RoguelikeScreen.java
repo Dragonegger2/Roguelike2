@@ -5,26 +5,22 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.sad.function.rogue.IEvent;
 import com.sad.function.rogue.MoveEvent;
+import com.sad.function.rogue.components.SpriteComponent;
+import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.dungeon.DungeonGenerator;
 import com.sad.function.rogue.objects.Dungeon;
 import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.systems.EntityManager;
+import com.sad.function.rogue.systems.EventQueue;
 import com.sad.function.rogue.visibility.RayCastVisibility;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
-public class GameScreen implements BaseScreen{
+public class RoguelikeScreen implements BaseScreen{
     private Dungeon dungeon = new Dungeon();
 
-    private List<GameEntity> gameObjects = new ArrayList<>();
-    private GameEntity player;
 
-    private LinkedList<IEvent> eventQueue = new LinkedList<>();
 
     private DungeonGenerator dungeonGenerator;
 
@@ -36,15 +32,19 @@ public class GameScreen implements BaseScreen{
     private EntityManager entityManager;
     UUID playerUUID;
 
-    public GameScreen() {
+    public RoguelikeScreen() {
 
         entityManager = new EntityManager();
         playerUUID = entityManager.createEntity();
 
-        player = new GameEntity(new Texture("player3.png"), 0,0);
-        gameObjects.add(player);
+        entityManager.addComponent(playerUUID, new TransformComponent(0,0));
+        entityManager.addComponent(playerUUID, new SpriteComponent(new Texture("player3.png")));
 
-        dungeonGenerator = new DungeonGenerator(dungeon, player);
+//        player = new GameEntity(new Texture("player3.png"), 0,0);
+
+//        gameObjects.add(player);
+
+        dungeonGenerator = new DungeonGenerator(dungeon, entityManager.getComponent(playerUUID, TransformComponent.class));
         dungeonGenerator.makeMap();
 
         fovCalculator = new RayCastVisibility();
@@ -52,20 +52,20 @@ public class GameScreen implements BaseScreen{
 
     public void processInput() {
         if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            eventQueue.add(new MoveEvent(-1, 0, dungeon.map, player));
+            EventQueue.getInstance().events.add(new MoveEvent(-1, 0, dungeon.map, player));
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            eventQueue.add(new MoveEvent(1, 0, dungeon.map, player));
+            EventQueue.getInstance().events.add(new MoveEvent(1, 0, dungeon.map, player));
             fovRecompute = true;
 
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            eventQueue.add(new MoveEvent(0,1, dungeon.map, player));
+            EventQueue.getInstance().events.add(new MoveEvent(0,1, dungeon.map, player));
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            eventQueue.add(new MoveEvent(0, -1, dungeon.map, player));
+            EventQueue.getInstance().events.add(new MoveEvent(0, -1, dungeon.map, player));
             fovRecompute = true;
 
         }
@@ -77,8 +77,8 @@ public class GameScreen implements BaseScreen{
     public void update(float delta) {
 
         //Process event queue.
-        while(!eventQueue.isEmpty()) {
-            eventQueue.removeFirst().Execute();
+        while(!EventQueue.getInstance().events.isEmpty()) {
+            EventQueue.getInstance().events.removeFirst().Execute();
         }
 
     }

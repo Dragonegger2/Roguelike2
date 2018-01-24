@@ -1,6 +1,7 @@
 package com.sad.function.rogue.dungeon;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.objects.Dungeon;
 import com.sad.function.rogue.objects.Tile;
@@ -11,18 +12,23 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DungeonGenerator {
     public Dungeon dungeon;
     public GameEntity player;
+    public TransformComponent playerComp;
 
     public static final int ROOM_MAX_SIZE = 10;
     public static final int ROOM_MIN_SIZE = 6;
     public static final int MAX_ROOMS = 30;
 
-    public static final int MAX_ROOM_MOONSTERS = 3;
+    public static final int MAX_ROOM_MONSTERS = 3;
 
     public DungeonGenerator(Dungeon dungeon, GameEntity player) {
         this.dungeon = dungeon;
         this.player = player;
     }
 
+    public DungeonGenerator(Dungeon dungeon, TransformComponent player) {
+        this.dungeon = dungeon;
+        playerComp = player;
+    }
     /**
      * Carve a room out of the dungeon object.
      * @param room Accepts a rect object which describes a room.
@@ -68,8 +74,14 @@ public class DungeonGenerator {
 
                 //Put the player in the first location.
                 if(rooms.size() == 0) {
-                    player.x = (int) newRoomCenter.x;
-                    player.y = (int) newRoomCenter.y;
+                    if(playerComp != null ) {
+                        playerComp.x = (int) newRoomCenter.x;
+                        playerComp.y = (int) newRoomCenter.y;
+                    }
+                    else {
+                        player.x = (int) newRoomCenter.x;
+                        player.y = (int) newRoomCenter.y;
+                    }
                 }
 
                 //For all other
@@ -115,7 +127,7 @@ public class DungeonGenerator {
     }
 
     private void placeObjects(Rect room) {
-        int numberOfMonsterToGenerate = ThreadLocalRandom.current().nextInt(0, MAX_ROOM_MOONSTERS);
+        int numberOfMonsterToGenerate = ThreadLocalRandom.current().nextInt(0, MAX_ROOM_MONSTERS);
 
         for(int i = 0; i < numberOfMonsterToGenerate; i++ ) {
             int x = ThreadLocalRandom.current().nextInt(room.x1, room.x2);

@@ -1,5 +1,5 @@
 package com.sad.function.rogue;
 
-public interface ICommand {
+public interface IEvent {
     void Execute();
 }

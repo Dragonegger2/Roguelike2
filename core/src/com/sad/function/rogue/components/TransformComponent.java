@@ -9,15 +9,13 @@ public class TransformComponent extends Component {
      * Default constructor calls the Component base
      * class so that it gets assigned a unique UUID.
      */
-    public TransformComponent() {
+    public TransformComponent(int x, int y) {
         super();
+
+        this.x = x;
+        this.y = y;
     }
 
-    public float x = 0;
-    public float y = 0;
-
-    public float originX = 1.0f;
-    public float originY = 1.0f;
-
-    public boolean left = false;
+    public int x = 0;
+    public int y = 0;
 }
