@@ -15,6 +15,7 @@ public class MoverComponent extends Component {
     }
 
     public void move(int dx, int dy, Tile[][] map) {
+//        manager.getAllComponentsOfType(MapComponent.class).toArray()[0]; Get the tile map.
         //If you aren't blocked by a blocking thing.
         try {
             if (!map[manager.getComponent(target, TransformComponent.class).x + dx][manager.getComponent(target, TransformComponent.class).y + dy].blocked) {

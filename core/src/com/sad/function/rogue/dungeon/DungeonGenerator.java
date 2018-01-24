@@ -21,7 +21,7 @@ public class DungeonGenerator {
     private static final int ROOM_MIN_SIZE = 6;
     private static final int MAX_ROOMS = 30;
 
-    public static final int MAX_ROOM_MONSTERS = 3;
+    private static final int MAX_ROOM_MONSTERS = 3;
 
     public DungeonGenerator(Dungeon dungeon, GameEntity player) {
         this.dungeon = dungeon;

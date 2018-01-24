@@ -25,7 +25,6 @@ public class RoguelikeScreen implements BaseScreen{
 
     private DungeonGenerator dungeonGenerator;
 
-    private final static int TORCH_RADIUS = 10;
     private RayCastVisibility fovCalculator;
 
     private boolean fovRecompute = true;
@@ -96,7 +95,6 @@ public class RoguelikeScreen implements BaseScreen{
 
         if(fovRecompute) {
             fovRecompute = false;
-//            fovCalculator.Compute(dungeon, player.x, player.y, TORCH_RADIUS);
             Set<UUID> lightSources = entityManager.getAllEntitiesPossessingComponents(new Class[] {LightSourceComponent.class, TransformComponent.class});
             for (UUID source: lightSources) {
                 fovCalculator.Compute(dungeon,
@@ -136,10 +134,6 @@ public class RoguelikeScreen implements BaseScreen{
                 }
             }
         }
-
-//        for (GameEntity entity : gameObjects) {
-//            entity.draw(batch);
-//        }
 
         Set<UUID> drawables = entityManager.getAllEntitiesPossessingComponents(new Class[]{TransformComponent.class, SpriteComponent.class});
         for (UUID drawable: drawables
