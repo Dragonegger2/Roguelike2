@@ -5,12 +5,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.sad.function.rogue.MoveEvent;
+import com.sad.function.rogue.components.MoverComponent;
 import com.sad.function.rogue.components.SpriteComponent;
 import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.dungeon.DungeonGenerator;
 import com.sad.function.rogue.objects.Dungeon;
-import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.systems.EntityManager;
 import com.sad.function.rogue.systems.EventQueue;
 import com.sad.function.rogue.visibility.RayCastVisibility;
@@ -39,10 +38,8 @@ public class RoguelikeScreen implements BaseScreen{
 
         entityManager.addComponent(playerUUID, new TransformComponent(0,0));
         entityManager.addComponent(playerUUID, new SpriteComponent(new Texture("player3.png")));
+        entityManager.addComponent(playerUUID, new MoverComponent(entityManager, playerUUID));
 
-//        player = new GameEntity(new Texture("player3.png"), 0,0);
-
-//        gameObjects.add(player);
 
         dungeonGenerator = new DungeonGenerator(dungeon, entityManager.getComponent(playerUUID, TransformComponent.class));
         dungeonGenerator.makeMap();
@@ -52,20 +49,21 @@ public class RoguelikeScreen implements BaseScreen{
 
     public void processInput() {
         if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            EventQueue.getInstance().events.add(new MoveEvent(-1, 0, dungeon.map, player));
+//            EventQueue.getInstance().events.add(new MoveEvent(-1, 0, dungeon.map, player));
+            entityManager.getComponent(playerUUID, MoverComponent.class).move(-1, 0, dungeon.map);
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            EventQueue.getInstance().events.add(new MoveEvent(1, 0, dungeon.map, player));
+//            EventQueue.getInstance().events.add(new MoveEvent(1, 0, dungeon.map, player));
             fovRecompute = true;
 
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            EventQueue.getInstance().events.add(new MoveEvent(0,1, dungeon.map, player));
+//            EventQueue.getInstance().events.add(new MoveEvent(0,1, dungeon.map, player));
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            EventQueue.getInstance().events.add(new MoveEvent(0, -1, dungeon.map, player));
+//            EventQueue.getInstance().events.add(new MoveEvent(0, -1, dungeon.map, player));
             fovRecompute = true;
 
         }
@@ -90,7 +88,7 @@ public class RoguelikeScreen implements BaseScreen{
 
         if(fovRecompute) {
             fovRecompute = false;
-            fovCalculator.Compute(dungeon, player.x, player.y, TORCH_RADIUS);
+//            fovCalculator.Compute(dungeon, player.x, player.y, TORCH_RADIUS);
         }
 
         batch.begin();
@@ -124,9 +122,9 @@ public class RoguelikeScreen implements BaseScreen{
             }
         }
 
-        for (GameEntity entity : gameObjects) {
-            entity.draw(batch);
-        }
+//        for (GameEntity entity : gameObjects) {
+//            entity.draw(batch);
+//        }
 
         batch.end();
     }
