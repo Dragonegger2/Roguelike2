@@ -22,7 +22,6 @@ public class MoverComponent extends Component {
                 manager.getComponent(target, TransformComponent.class).y += dy;
             }
         }
-        //Not sure what exception gets thrown if I try and access an entity without said component.
         catch(Exception e) {
             System.out.println("Matching component was not found");
         }

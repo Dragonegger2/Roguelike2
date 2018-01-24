@@ -12,12 +12,14 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 
 public class DungeonGenerator {
     public Dungeon dungeon;
-    public GameEntity player;
-    public TransformComponent playerComp;
+    private GameEntity player;
+    private TransformComponent playerComp;
 
-    public static final int ROOM_MAX_SIZE = 10;
-    public static final int ROOM_MIN_SIZE = 6;
-    public static final int MAX_ROOMS = 30;
+    private LinkedList<Rect> rooms = new LinkedList<>();
+
+    private static final int ROOM_MAX_SIZE = 10;
+    private static final int ROOM_MIN_SIZE = 6;
+    private static final int MAX_ROOMS = 30;
 
     public static final int MAX_ROOM_MONSTERS = 3;
 
@@ -47,7 +49,6 @@ public class DungeonGenerator {
         sealDungeon();
 
         //Generate room list.
-        LinkedList<Rect> rooms = new LinkedList<Rect>();
 
         for(int i = 0; i < MAX_ROOMS; i++ ) {
 
