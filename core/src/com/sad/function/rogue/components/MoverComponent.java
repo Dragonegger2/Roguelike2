@@ -19,7 +19,7 @@ public class MoverComponent extends Component {
         try {
             if (!map[manager.getComponent(target, TransformComponent.class).x + dx][manager.getComponent(target, TransformComponent.class).y + dy].blocked) {
                 manager.getComponent(target, TransformComponent.class).x += dx;
-                manager.getComponent(target, TransformComponent.class).yi += dy;
+                manager.getComponent(target, TransformComponent.class).y += dy;
             }
         }
         //Not sure what exception gets thrown if I try and access an entity without said component.
