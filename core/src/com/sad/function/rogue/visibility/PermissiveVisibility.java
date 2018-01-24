@@ -36,7 +36,6 @@ public class PermissiveVisibility extends Visibility {
     }
 
 
-    @Override
     public void Compute(int playerX, int playerY, int rangeLimit) {
 
     }
@@ -118,6 +117,11 @@ public class PermissiveVisibility extends Visibility {
         catch (ArrayIndexOutOfBoundsException e) {
 
         }
+    }
+
+    @Override
+    public void Compute(Dungeon dungeon, int playerX, int playerY, int rangeLimit) {
+
     }
 
     /**

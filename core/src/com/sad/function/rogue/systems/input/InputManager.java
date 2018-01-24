@@ -1,54 +1,32 @@
 package com.sad.function.rogue.systems.input;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Input manager for mah game.
  */
 public class InputManager implements InputProcessor{
-    private boolean[] keyStates = new boolean[256];
 
-    private ArrayList<KeyState> managedKeys = new ArrayList<KeyState>();
-
-    public InputManager() {
-
-    }
-
-    /**
-     * Queries the current keyboard state.
-     * @param keycode
-     * @return Returns true if the key is down.
-     */
-    public boolean isKeyDown(int keycode) {
-//        if(managedKeys.)
-        return false;
-    }
-
-    /**
-     * Queries the current keyboard state.
-     * @param keycode
-     * @return Returns true if the key is up.
-     */
-    public boolean isKeyUp(int keycode) {
-        return !keyStates[keycode];
-    }
+    public LinkedList<KeyState> keyPresses = new LinkedList<KeyState>();
 
     @Override
     public boolean keyDown(int keycode) {
-        keyStates[keycode] = true;
+        keyPresses.add(new KeyState(keycode, true, false, false));
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        keyStates[keycode] = false;
+        keyPresses.add(new KeyState(keycode, false, true, false));
         return false;
     }
 
     @Override
     public boolean keyTyped(char character) {
+        keyPresses.add(new KeyState(character, false, false, true));
         return false;
     }
 
@@ -78,9 +56,27 @@ public class InputManager implements InputProcessor{
     }
 
     public class KeyState {
-        public int keyCode;
-        public char character;
+        public KeyState(int keyCode, boolean isDown, boolean isUp, boolean justReleased) {
+            this.isDown = isDown;
+            this.isUp = isUp;
+            this.wasPressed = justReleased;
 
-        public boolean isPressed;
+            characterCode = Input.Keys.toString(keyCode);
+        }
+
+        public KeyState(char characterCode, boolean isDown, boolean isUp, boolean wasPressed) {
+            this.isDown = isDown;
+            this.isUp = isUp;
+            this.wasPressed = wasPressed;
+
+
+            this.characterCode = Input.Keys.toString(characterCode );
+        }
+
+        public String characterCode;
+
+        public boolean isDown;
+        public boolean isUp;
+        public boolean wasPressed;
     }
 }

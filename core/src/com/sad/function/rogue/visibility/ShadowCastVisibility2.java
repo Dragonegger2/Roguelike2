@@ -36,7 +36,6 @@ public class ShadowCastVisibility2 extends Visibility {
     }
 
 
-    @Override
     public void Compute(int playerX, int playerY, int rangeLimit) {
 
         LevelPoint origin = new LevelPoint(playerX, playerY);
@@ -124,6 +123,11 @@ public class ShadowCastVisibility2 extends Visibility {
         catch (ArrayIndexOutOfBoundsException e) {
 
         }
+    }
+
+    @Override
+    public void Compute(Dungeon dungeon, int playerX, int playerY, int rangeLimit) {
+
     }
 
     /**

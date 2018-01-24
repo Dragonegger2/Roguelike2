@@ -2,12 +2,13 @@ package com.sad.function.rogue.dungeon;
 
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.rogue.components.TransformComponent;
-import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.objects.Dungeon;
+import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.objects.Tile;
 
 import java.util.LinkedList;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static java.util.concurrent.ThreadLocalRandom.current;
 
 public class DungeonGenerator {
     public Dungeon dungeon;
@@ -46,14 +47,14 @@ public class DungeonGenerator {
         sealDungeon();
 
         //Generate room list.
-        LinkedList<Rect> rooms = new LinkedList<>();
+        LinkedList<Rect> rooms = new LinkedList<Rect>();
 
         for(int i = 0; i < MAX_ROOMS; i++ ) {
 
-            int w = ThreadLocalRandom.current().nextInt(ROOM_MIN_SIZE, ROOM_MAX_SIZE);
-            int h = ThreadLocalRandom.current().nextInt(ROOM_MIN_SIZE, ROOM_MAX_SIZE);
-            int x = ThreadLocalRandom.current().nextInt(0, dungeon.MAP_WIDTH - w - 1);
-            int y = ThreadLocalRandom.current().nextInt(0, dungeon.MAP_HEIGHT - h - 1);
+            int w = current().nextInt(ROOM_MIN_SIZE, ROOM_MAX_SIZE);
+            int h = current().nextInt(ROOM_MIN_SIZE, ROOM_MAX_SIZE);
+            int x = current().nextInt(0, dungeon.MAP_WIDTH - w - 1);
+            int y = current().nextInt(0, dungeon.MAP_HEIGHT - h - 1);
 
             Rect new_room = new Rect(x, y, w, h);
 
@@ -88,7 +89,7 @@ public class DungeonGenerator {
                 else {
                     Vector2 previousRoomCenter = rooms.getLast().center();
 
-                    if(ThreadLocalRandom.current().nextInt(0, 1) == 1) {
+                    if(current().nextInt(0, 1) == 1) {
                         //First move horizontally then vertically.
                         createHorizontalTunnel((int)previousRoomCenter.x, (int) newRoomCenter.x, (int)previousRoomCenter.y );
                         createVerticalTunnel((int)previousRoomCenter.y, (int)newRoomCenter.y, (int)newRoomCenter.x );
@@ -127,11 +128,11 @@ public class DungeonGenerator {
     }
 
     private void placeObjects(Rect room) {
-        int numberOfMonsterToGenerate = ThreadLocalRandom.current().nextInt(0, MAX_ROOM_MONSTERS);
+        int numberOfMonsterToGenerate = current().nextInt(0, MAX_ROOM_MONSTERS);
 
         for(int i = 0; i < numberOfMonsterToGenerate; i++ ) {
-            int x = ThreadLocalRandom.current().nextInt(room.x1, room.x2);
-            int y = ThreadLocalRandom.current().nextInt(room.y1, room.y2);
+            int x = current().nextInt(room.x1, room.x2);
+            int y = current().nextInt(room.y1, room.y2);
 
             //TODO:Roll for monster creation.
         }

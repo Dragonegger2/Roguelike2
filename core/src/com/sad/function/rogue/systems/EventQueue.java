@@ -11,7 +11,7 @@ public class EventQueue {
     private static EventQueue ourInstance;
 
     private EventQueue() {
-        events = new LinkedList<>();
+        events = new LinkedList<IEvent>();
         ourInstance = this;
     }
 

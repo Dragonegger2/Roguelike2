@@ -21,10 +21,10 @@ import java.util.UUID;
 public class GameScreen implements BaseScreen{
     private Dungeon dungeon = new Dungeon();
 
-    private List<GameEntity> gameObjects = new ArrayList<>();
+    private List<GameEntity> gameObjects = new ArrayList<GameEntity>();
     private GameEntity player;
 
-    private LinkedList<IEvent> eventQueue = new LinkedList<>();
+    private LinkedList<IEvent> eventQueue = new LinkedList<IEvent>();
 
     private DungeonGenerator dungeonGenerator;
 
