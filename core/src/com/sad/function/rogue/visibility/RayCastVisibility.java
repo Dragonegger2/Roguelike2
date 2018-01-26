@@ -8,9 +8,6 @@ import com.sad.function.rogue.objects.Dungeon;
 public class RayCastVisibility {
     boolean[][] fieldOfViewMap;
 
-    public RayCastVisibility() {
-    }
-
     private boolean[][] emptyFOV() {
         //Set nothing visible by default.
         for(int x = 0; x < fieldOfViewMap.length; x++) {

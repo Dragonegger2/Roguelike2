@@ -18,10 +18,8 @@ import com.sad.function.rogue.visibility.RayCastVisibility;
 import java.util.Set;
 import java.util.UUID;
 
-public class RoguelikeScreen implements BaseScreen{
+public class RogueLikeScreen implements BaseScreen{
     private Dungeon dungeon = new Dungeon();
-
-
 
     private DungeonGenerator dungeonGenerator;
 
@@ -30,12 +28,18 @@ public class RoguelikeScreen implements BaseScreen{
     private boolean fovRecompute = true;
 
     private EntityManager entityManager;
-    UUID playerUUID;
 
-    public RoguelikeScreen() {
+    //NameOfAction, Matchign State?
+//    Map<String, Action> inputMap;
+
+    UUID playerUUID;
+    UUID dungeonUUID;
+
+    public RogueLikeScreen() {
 
         entityManager = new EntityManager();
         playerUUID = entityManager.createEntity();
+        dungeonUUID = entityManager.createEntity();
 
         entityManager.addComponent(playerUUID, new TransformComponent(0,0));
         entityManager.addComponent(playerUUID, new SpriteComponent(new Texture("player3.png")));
@@ -46,46 +50,33 @@ public class RoguelikeScreen implements BaseScreen{
         dungeonGenerator.makeMap();
 
         fovCalculator = new RayCastVisibility();
+
     }
 
     public void processInput() {
         if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-//            EventQueue.getInstance().events.add(new MoveEvent(-1, 0, dungeon.map, player));
             entityManager.getComponent(playerUUID, MoverComponent.class).move(-1, 0, dungeon.map);
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-//            EventQueue.getInstance().events.add(new MoveEvent(1, 0, dungeon.map, player));
             entityManager.getComponent(playerUUID, MoverComponent.class).move(1, 0, dungeon.map);
-
             fovRecompute = true;
-
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-//            EventQueue.getInstance().events.add(new MoveEvent(0,1, dungeon.map, player));
             entityManager.getComponent(playerUUID, MoverComponent.class).move(0,   1, dungeon.map);
-
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-//            EventQueue.getInstance().events.add(new MoveEvent(0, -1, dungeon.map, player));
             entityManager.getComponent(playerUUID, MoverComponent.class).move(0, -1, dungeon.map);
-
             fovRecompute = true;
-
         }
-//        else if ( Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
-//            dungeonGenerator.makeMap();
-//        }
     }
 
     public void update(float delta) {
-
         //Process event queue.
         while(!EventQueue.getInstance().events.isEmpty()) {
             EventQueue.getInstance().events.removeFirst().Execute();
         }
-
     }
 
     public void render(Batch batch) {
