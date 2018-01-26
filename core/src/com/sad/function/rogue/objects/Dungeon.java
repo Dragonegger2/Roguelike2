@@ -21,6 +21,9 @@ public class Dungeon {
     public Dungeon(int width, int height) {
         MAP_WIDTH = width;
         MAP_HEIGHT = height;
+
+        map = new Tile[MAP_HEIGHT][MAP_HEIGHT];
+        initializeMap();
     }
 
 

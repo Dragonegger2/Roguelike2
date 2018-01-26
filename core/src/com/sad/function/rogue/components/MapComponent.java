@@ -1,5 +1,6 @@
 package com.sad.function.rogue.components;
 
+import com.sad.function.rogue.dungeon.DungeonGenerator;
 import com.sad.function.rogue.objects.Dungeon;
 import com.sad.function.rogue.systems.EntityManager;
 import com.sad.function.rogue.visibility.RayCastVisibility;
@@ -11,6 +12,7 @@ public class MapComponent extends Component {
     private EntityManager em;
 
     public Dungeon dungeon;
+    public boolean fovRecompute = false;
 
     public MapComponent(EntityManager em) {
         this.em = em;
@@ -19,14 +21,33 @@ public class MapComponent extends Component {
         dungeon = new Dungeon();
     }
 
-    public boolean isVisible(int x, int y) {
-        UUID player = UUID.randomUUID();
+    public void generateDungeon() {
+        UUID player = em.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
 
-        fovCalculator.Compute(dungeon,
-                em.getComponent(player, TransformComponent.class).x,
-                em.getComponent(player, TransformComponent.class).y,
-                em.getComponent(player, LightSourceComponent.class).lightLevel
+        DungeonGenerator dg = new DungeonGenerator(
+                dungeon,
+                em.getComponent(player, TransformComponent.class)
+        );
+
+        dg.makeMap();
+    }
+    /**
+     * Recomputes the visibility grid if fovRecompute has been set.
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean isVisible(int x, int y) {
+        UUID player = em.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
+
+        if(fovRecompute) {
+            fovCalculator.Compute(dungeon,
+                    em.getComponent(player, TransformComponent.class).x,
+                    em.getComponent(player, TransformComponent.class).y,
+                    em.getComponent(player, LightSourceComponent.class).lightLevel
             );
+        }
 
         return fovCalculator.isVisible(x, y);
     }

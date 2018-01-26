@@ -5,12 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.sad.function.rogue.components.LightSourceComponent;
-import com.sad.function.rogue.components.MoverComponent;
-import com.sad.function.rogue.components.SpriteComponent;
-import com.sad.function.rogue.components.TransformComponent;
-import com.sad.function.rogue.dungeon.DungeonGenerator;
-import com.sad.function.rogue.objects.Dungeon;
+import com.sad.function.rogue.components.*;
 import com.sad.function.rogue.systems.EntityManager;
 import com.sad.function.rogue.systems.EventQueue;
 import com.sad.function.rogue.visibility.RayCastVisibility;
@@ -19,10 +14,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class RogueLikeScreen implements BaseScreen{
-    private Dungeon dungeon = new Dungeon();
-
-    private DungeonGenerator dungeonGenerator;
-
     private RayCastVisibility fovCalculator;
 
     private boolean fovRecompute = true;
@@ -32,22 +23,25 @@ public class RogueLikeScreen implements BaseScreen{
     //NameOfAction, Matchign State?
 //    Map<String, Action> inputMap;
 
-    UUID playerUUID;
-    UUID dungeonUUID;
+    private UUID mapUUID;
+    private UUID playerUUID;
 
     public RogueLikeScreen() {
 
         entityManager = new EntityManager();
         playerUUID = entityManager.createEntity();
-        dungeonUUID = entityManager.createEntity();
+        mapUUID = entityManager.createEntity();
 
         entityManager.addComponent(playerUUID, new TransformComponent(0,0));
         entityManager.addComponent(playerUUID, new SpriteComponent(new Texture("player3.png")));
         entityManager.addComponent(playerUUID, new MoverComponent(entityManager, playerUUID));
         entityManager.addComponent(playerUUID, new LightSourceComponent());
+        entityManager.addComponent(playerUUID, new PlayerComponent());
 
-        dungeonGenerator = new DungeonGenerator(dungeon, entityManager.getComponent(playerUUID, TransformComponent.class));
-        dungeonGenerator.makeMap();
+        entityManager.addComponent(mapUUID, new MapComponent(entityManager));
+
+
+        entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
 
         fovCalculator = new RayCastVisibility();
 
@@ -55,19 +49,31 @@ public class RogueLikeScreen implements BaseScreen{
 
     public void processInput() {
         if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            entityManager.getComponent(playerUUID, MoverComponent.class).move(-1, 0, dungeon.map);
+            entityManager.getComponent(playerUUID, MoverComponent.class).move(
+                    -1,
+                    0,
+                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            entityManager.getComponent(playerUUID, MoverComponent.class).move(1, 0, dungeon.map);
+            entityManager.getComponent(playerUUID, MoverComponent.class).move(
+                    1,
+                    0,
+                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            entityManager.getComponent(playerUUID, MoverComponent.class).move(0,   1, dungeon.map);
+            entityManager.getComponent(playerUUID, MoverComponent.class).move(
+                    0,
+                    1,
+                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
             fovRecompute = true;
         }
         else if( Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            entityManager.getComponent(playerUUID, MoverComponent.class).move(0, -1, dungeon.map);
+            entityManager.getComponent(playerUUID, MoverComponent.class).move(
+                    0,
+                    -1,
+                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
             fovRecompute = true;
         }
     }
@@ -88,7 +94,7 @@ public class RogueLikeScreen implements BaseScreen{
             fovRecompute = false;
             Set<UUID> lightSources = entityManager.getAllEntitiesPossessingComponents(new Class[] {LightSourceComponent.class, TransformComponent.class});
             for (UUID source: lightSources) {
-                fovCalculator.Compute(dungeon,
+                fovCalculator.Compute(entityManager.getComponent(mapUUID, MapComponent.class).dungeon,
                         entityManager.getComponent(source, TransformComponent.class).x,
                         entityManager.getComponent(source, TransformComponent.class).y,
                         entityManager.getComponent(source, LightSourceComponent.class).lightLevel);
@@ -97,31 +103,31 @@ public class RogueLikeScreen implements BaseScreen{
 
         batch.begin();
 
-        for(int x = 0; x < dungeon.MAP_WIDTH; x++) {
-            for(int y = 0; y < dungeon.MAP_HEIGHT; y++) {
+        for(int x = 0; x < entityManager.getComponent(mapUUID, MapComponent.class).dungeon.MAP_WIDTH; x++) {
+            for(int y = 0; y < entityManager.getComponent(mapUUID, MapComponent.class).dungeon.MAP_HEIGHT; y++) {
                 boolean visible = fovCalculator.isVisible(x, y);
-                boolean wall = dungeon.map[x][y].blockSight;
+                boolean wall = entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map[x][y].blockSight;
                 if(!visible) {
                     //Players can't see these things if they aren't explored.
-                    if(dungeon.map[x][y].explored) {
+                    if(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map[x][y].explored) {
                         //Outside of FOV
                         if (wall) {
                             //dark wall
-                            batch.draw(dungeon.wallDark, x * 16, y * 16);
+                            batch.draw(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.wallDark, x * 16, y * 16);
                         } else {
                             //dark ground
-                            batch.draw(dungeon.floorDark, x * 16, y * 16);
+                            batch.draw(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.floorDark, x * 16, y * 16);
                         }
                     }
                 }
                 else {
                     //Player can see it.
                     if (wall) {
-                        batch.draw(dungeon.wallLit, x * 16, y * 16);
+                        batch.draw(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.wallLit, x * 16, y * 16);
                     } else {
-                        batch.draw(dungeon.floorLit, x * 16, y * 16);
+                        batch.draw(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.floorLit, x * 16, y * 16);
                     }
-                    dungeon.map[x][y].explored = true;
+                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map[x][y].explored = true;
                 }
             }
         }
