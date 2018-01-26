@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.sad.function.rogue.components.*;
 import com.sad.function.rogue.systems.EntityManager;
 import com.sad.function.rogue.systems.EventQueue;
+import com.sad.function.rogue.systems.input.Action;
+import com.sad.function.rogue.systems.input.KeyBoardGameInput;
 import com.sad.function.rogue.visibility.RayCastVisibility;
 
 import java.util.Set;
@@ -20,13 +22,37 @@ public class RogueLikeScreen implements BaseScreen{
 
     private EntityManager entityManager;
 
-    //NameOfAction, Matchign State?
-//    Map<String, Action> inputMap;
+    //NameOfAction, Matching State?
+
+    //Map<String, KeyState> inputMap;
+    //Context has Actions tied to Inputs
+        //Actions are the events that I dispatch to the event queue.
 
     private UUID mapUUID;
     private UUID playerUUID;
 
+
+    private Action moveLeft;
+    private Action moveRight;
+    private Action moveUp;
+    private Action moveDown;
+
     public RogueLikeScreen() {
+        moveLeft = new Action();
+        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.LEFT));
+        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.A));
+
+        moveRight = new Action();
+        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.RIGHT));
+        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.D));
+
+        moveDown = new Action();
+        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.DOWN));
+        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.S));
+
+        moveUp = new Action();
+        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.UP));
+        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.W));
 
         entityManager = new EntityManager();
         playerUUID = entityManager.createEntity();
@@ -48,28 +74,37 @@ public class RogueLikeScreen implements BaseScreen{
     }
 
     public void processInput() {
-        if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+        //if(
+
+//        if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+//            entityManager.getComponent(playerUUID, MoverComponent.class).move(
+//                    -1,
+//                    0,
+//                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
+//            fovRecompute = true;
+//        }
+        if(moveLeft.value() > 0 ){
             entityManager.getComponent(playerUUID, MoverComponent.class).move(
                     -1,
                     0,
                     entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
             fovRecompute = true;
         }
-        else if( Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+        else if( moveRight.value() > 0 ) {
             entityManager.getComponent(playerUUID, MoverComponent.class).move(
                     1,
                     0,
                     entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
             fovRecompute = true;
         }
-        else if( Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+        else if( moveUp.value() > 0) {
             entityManager.getComponent(playerUUID, MoverComponent.class).move(
                     0,
                     1,
                     entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
             fovRecompute = true;
         }
-        else if( Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+        else if( moveDown.value() > 0) {
             entityManager.getComponent(playerUUID, MoverComponent.class).move(
                     0,
                     -1,
