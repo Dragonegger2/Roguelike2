@@ -3,7 +3,6 @@ package com.sad.function.rogue.dungeon;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.objects.Dungeon;
-import com.sad.function.rogue.objects.GameEntity;
 import com.sad.function.rogue.objects.Tile;
 
 import java.util.LinkedList;
@@ -12,7 +11,6 @@ import static java.util.concurrent.ThreadLocalRandom.current;
 
 public class DungeonGenerator {
     public Dungeon dungeon;
-    private GameEntity player;
     private TransformComponent playerComp;
 
     private LinkedList<Rect> rooms = new LinkedList<>();
@@ -23,15 +21,11 @@ public class DungeonGenerator {
 
     private static final int MAX_ROOM_MONSTERS = 3;
 
-    public DungeonGenerator(Dungeon dungeon, GameEntity player) {
-        this.dungeon = dungeon;
-        this.player = player;
-    }
-
     public DungeonGenerator(Dungeon dungeon, TransformComponent player) {
         this.dungeon = dungeon;
         playerComp = player;
     }
+
     /**
      * Carve a room out of the dungeon object.
      * @param room Accepts a rect object which describes a room.
@@ -80,10 +74,7 @@ public class DungeonGenerator {
                         playerComp.x = (int) newRoomCenter.x;
                         playerComp.y = (int) newRoomCenter.y;
                     }
-                    else {
-                        player.x = (int) newRoomCenter.x;
-                        player.y = (int) newRoomCenter.y;
-                    }
+                    //TODO: Fix this bit of code; if there is no player component, attach one here.
                 }
 
                 //For all other

@@ -3,9 +3,9 @@ package com.sad.function.rogue.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.sad.function.rogue.components.*;
+import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.EntityManager;
 import com.sad.function.rogue.systems.EventQueue;
 import com.sad.function.rogue.systems.input.Action;
@@ -31,7 +31,6 @@ public class RogueLikeScreen implements BaseScreen{
     private UUID mapUUID;
     private UUID playerUUID;
 
-
     private Action moveLeft;
     private Action moveRight;
     private Action moveUp;
@@ -55,22 +54,17 @@ public class RogueLikeScreen implements BaseScreen{
         moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.W));
 
         entityManager = new EntityManager();
-        playerUUID = entityManager.createEntity();
         mapUUID = entityManager.createEntity();
 
-        entityManager.addComponent(playerUUID, new TransformComponent(0,0));
-        entityManager.addComponent(playerUUID, new SpriteComponent(new Texture("player3.png")));
-        entityManager.addComponent(playerUUID, new MoverComponent(entityManager, playerUUID));
-        entityManager.addComponent(playerUUID, new LightSourceComponent());
-        entityManager.addComponent(playerUUID, new PlayerComponent());
+        //Create the player.
+        playerUUID = PlayerBuilder.createPlayer(entityManager);
 
+        //Create map object and then generate the dungeon.
         entityManager.addComponent(mapUUID, new MapComponent(entityManager));
-
-
         entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
 
+        //TODO: I should probably rewrite this so that it is just a static function.
         fovCalculator = new RayCastVisibility();
-
     }
 
     public void processInput() {
