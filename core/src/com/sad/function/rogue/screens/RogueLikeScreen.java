@@ -3,7 +3,11 @@ package com.sad.function.rogue.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.sad.function.rogue.components.*;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.EntityManager;
@@ -36,6 +40,12 @@ public class RogueLikeScreen implements BaseScreen{
     private Action moveUp;
     private Action moveDown;
 
+    //BOX2D Stuff
+    //No gravity, hence why y is zero.
+    World world = new World(new Vector2(0, 0), true);
+    Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+    private OrthographicCamera camera;
+
     public RogueLikeScreen() {
         moveLeft = new Action();
         moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.LEFT));
@@ -65,6 +75,8 @@ public class RogueLikeScreen implements BaseScreen{
 
         //TODO: I should probably rewrite this so that it is just a static function.
         fovCalculator = new RayCastVisibility();
+        //Multiply the height  by aspect ratio.
+        camera = new OrthographicCamera(16 * 80, 50 * 16);
     }
 
     public void processInput() {
@@ -115,9 +127,20 @@ public class RogueLikeScreen implements BaseScreen{
     }
 
     public void render(Batch batch) {
+        UUID playerUUID = entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
+        camera.position.set(
+                entityManager.getComponent(playerUUID, TransformComponent.class).x * 16,
+                entityManager.getComponent(playerUUID, TransformComponent.class).y * 16,
+                0
+        );
+
+        camera.update();
+
+        batch.setProjectionMatrix(camera.combined);
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 
         if(fovRecompute) {
             fovRecompute = false;
@@ -169,6 +192,8 @@ public class RogueLikeScreen implements BaseScreen{
                     entityManager.getComponent(drawable, TransformComponent.class).y * 16);
         }
         batch.end();
+
+        world.step(1/60f, 6, 2);
     }
 
     @Override

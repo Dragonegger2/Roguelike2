@@ -72,7 +72,7 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        
+
         // https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-box2d
         compile group: 'com.badlogicgames.gdx', name: 'gdx-box2d', version: '1.9.8'
 

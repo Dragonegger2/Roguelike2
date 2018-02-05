@@ -26,7 +26,7 @@ public class MapComponent extends Component {
 
         DungeonGenerator dg = new DungeonGenerator(
                 dungeon,
-                em.getComponent(player, TransformComponent.class)
+                em
         );
 
         dg.makeMap();

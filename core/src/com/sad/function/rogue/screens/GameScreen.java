@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class GameScreen implements BaseScreen{
+
     private Dungeon dungeon = new Dungeon();
 
     private List<GameEntity> gameObjects = new ArrayList<GameEntity>();
@@ -36,6 +37,8 @@ public class GameScreen implements BaseScreen{
     private EntityManager entityManager;
     UUID playerUUID;
 
+    Texture t = new Texture("badlogic.jpg");
+
     public GameScreen() {
 
         entityManager = new EntityManager();
@@ -44,7 +47,6 @@ public class GameScreen implements BaseScreen{
         player = new GameEntity(new Texture("player3.png"), 0,0);
         gameObjects.add(player);
 
-        dungeonGenerator = new DungeonGenerator(dungeon, player);
         dungeonGenerator.makeMap();
 
         fovCalculator = new RayCastVisibility();
@@ -128,6 +130,7 @@ public class GameScreen implements BaseScreen{
             entity.draw(batch);
         }
 
+        batch.draw(t, 0,0);
         batch.end();
     }
 
