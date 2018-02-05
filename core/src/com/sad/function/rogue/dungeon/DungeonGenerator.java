@@ -1,17 +1,20 @@
 package com.sad.function.rogue.dungeon;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.rogue.components.PlayerComponent;
 import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.objects.Dungeon;
 import com.sad.function.rogue.objects.Tile;
+import com.sad.function.rogue.objects.builder.MonsterBuilder;
+import com.sad.function.rogue.systems.EntityManager;
 
 import java.util.LinkedList;
+import java.util.UUID;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 public class DungeonGenerator {
     public Dungeon dungeon;
-    private TransformComponent playerComp;
 
     private LinkedList<Rect> rooms = new LinkedList<>();
 
@@ -21,9 +24,10 @@ public class DungeonGenerator {
 
     private static final int MAX_ROOM_MONSTERS = 3;
 
-    public DungeonGenerator(Dungeon dungeon, TransformComponent player) {
+    private EntityManager entityManager;
+    public DungeonGenerator(Dungeon dungeon, EntityManager entityManager) {
         this.dungeon = dungeon;
-        playerComp = player;
+        this.entityManager = entityManager;
     }
 
     /**
@@ -70,9 +74,11 @@ public class DungeonGenerator {
 
                 //Put the player in the first location.
                 if(rooms.size() == 0) {
-                    if(playerComp != null ) {
-                        playerComp.x = (int) newRoomCenter.x;
-                        playerComp.y = (int) newRoomCenter.y;
+                    UUID player= entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
+
+                    if(entityManager.getComponent(player, TransformComponent.class) != null ) {
+                        entityManager.getComponent(player, TransformComponent.class).x = (int) newRoomCenter.x;
+                        entityManager.getComponent(player, TransformComponent.class).y = (int) newRoomCenter.y;
                     }
                     //TODO: Fix this bit of code; if there is no player component, attach one here.
                 }
@@ -127,6 +133,9 @@ public class DungeonGenerator {
             int y = current().nextInt(room.y1, room.y2);
 
             //TODO:Roll for monster creation.
+            MonsterBuilder builder = new MonsterBuilder(entityManager);
+
+            builder.setBlocks(true).setX(x).setY(y).setTextureLocation("goblin.png").createMonster();
         }
     }
 
