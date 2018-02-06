@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.sad.function.rogue.components.*;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
@@ -42,26 +42,12 @@ public class RogueLikeScreen implements BaseScreen{
 
     //BOX2D Stuff
     //No gravity, hence why y is zero.
-    World world = new World(new Vector2(0, 0), true);
-    Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+    private World world = new World(new Vector2(0, 0), true);
+    private Texture t = new Texture("badlogic.jpg");
     private OrthographicCamera camera;
 
     public RogueLikeScreen() {
-        moveLeft = new Action();
-        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.LEFT));
-        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.A));
-
-        moveRight = new Action();
-        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.RIGHT));
-        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.D));
-
-        moveDown = new Action();
-        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.DOWN));
-        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.S));
-
-        moveUp = new Action();
-        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.UP));
-        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.W));
+        setupActions();
 
         entityManager = new EntityManager();
         mapUUID = entityManager.createEntity();
@@ -75,12 +61,12 @@ public class RogueLikeScreen implements BaseScreen{
 
         //TODO: I should probably rewrite this so that it is just a static function.
         fovCalculator = new RayCastVisibility();
+
         //Multiply the height  by aspect ratio.
         camera = new OrthographicCamera(16 * 80, 50 * 16);
     }
 
     public void processInput() {
-        //if(
 
 //        if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
 //            entityManager.getComponent(playerUUID, MoverComponent.class).move(
@@ -191,11 +177,32 @@ public class RogueLikeScreen implements BaseScreen{
                     entityManager.getComponent(drawable, TransformComponent.class).x * 16,
                     entityManager.getComponent(drawable, TransformComponent.class).y * 16);
         }
+
+        batch.draw(t, 0,0);
         batch.end();
 
         world.step(1/60f, 6, 2);
     }
 
+    private void setupActions() {
+
+        moveLeft = new Action();
+        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.LEFT));
+        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.A));
+
+        moveRight = new Action();
+        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.RIGHT));
+        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.D));
+
+        moveDown = new Action();
+        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.DOWN));
+        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.S));
+
+        moveUp = new Action();
+        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.UP));
+        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.W));
+
+    }
     @Override
     public void dispose() {
     }
