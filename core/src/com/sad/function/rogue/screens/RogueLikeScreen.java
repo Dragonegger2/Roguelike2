@@ -4,10 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.sad.function.rogue.DungeonToPhysicsWorld;
 import com.sad.function.rogue.components.*;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.EntityManager;
@@ -43,8 +44,10 @@ public class RogueLikeScreen implements BaseScreen{
     //BOX2D Stuff
     //No gravity, hence why y is zero.
     private World world = new World(new Vector2(0, 0), true);
-    private Texture t = new Texture("badlogic.jpg");
+
     private OrthographicCamera camera;
+    private DungeonToPhysicsWorld dTPWorld;
+    private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     public RogueLikeScreen() {
         setupActions();
@@ -64,17 +67,13 @@ public class RogueLikeScreen implements BaseScreen{
 
         //Multiply the height  by aspect ratio.
         camera = new OrthographicCamera(16 * 80, 50 * 16);
+
+        dTPWorld = new DungeonToPhysicsWorld(entityManager.getComponent(mapUUID, MapComponent.class), world);
+        dTPWorld.GeneratePhysicsBodies();
+
     }
 
     public void processInput() {
-
-//        if( Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-//            entityManager.getComponent(playerUUID, MoverComponent.class).move(
-//                    -1,
-//                    0,
-//                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
-//            fovRecompute = true;
-//        }
         if(moveLeft.value() > 0 ){
             entityManager.getComponent(playerUUID, MoverComponent.class).move(
                     -1,
@@ -178,8 +177,8 @@ public class RogueLikeScreen implements BaseScreen{
                     entityManager.getComponent(drawable, TransformComponent.class).y * 16);
         }
 
-        batch.draw(t, 0,0);
         batch.end();
+        debugRenderer.render(world, camera.combined);
 
         world.step(1/60f, 6, 2);
     }
