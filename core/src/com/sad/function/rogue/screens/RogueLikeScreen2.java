@@ -1,5 +1,6 @@
 package com.sad.function.rogue.screens;
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,30 +11,19 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.sad.function.rogue.DungeonToPhysicsWorld;
 import com.sad.function.rogue.components.MapComponent;
-import com.sad.function.rogue.components.MoverComponent2;
+import com.sad.function.rogue.components.PhysicsComponent;
 import com.sad.function.rogue.components.PlayerComponent;
 import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.EntityManager;
-import com.sad.function.rogue.systems.EventQueue;
 import com.sad.function.rogue.systems.input.Action;
 import com.sad.function.rogue.systems.input.KeyBoardGameInput;
-import com.sad.function.rogue.visibility.RayCastVisibility;
 
 import java.util.UUID;
 
 public class RogueLikeScreen2 implements BaseScreen{
-    private RayCastVisibility fovCalculator;
-
-    private boolean fovRecompute = true;
 
     private EntityManager entityManager;
-
-    //NameOfAction, Matching State?
-
-    //Map<String, KeyState> inputMap;
-    //Context has Actions tied to Inputs
-        //Actions are the events that I dispatch to the event queue.
 
     private UUID mapUUID;
     private UUID playerUUID;
@@ -46,6 +36,7 @@ public class RogueLikeScreen2 implements BaseScreen{
     //BOX2D Stuff
     //No gravity, hence why y is zero.
     private World world = new World(new Vector2(0, 0), false);
+    private RayHandler rayHandler;
 
     private OrthographicCamera camera;
     private DungeonToPhysicsWorld dTPWorld;
@@ -64,63 +55,46 @@ public class RogueLikeScreen2 implements BaseScreen{
         entityManager.addComponent(mapUUID, new MapComponent(entityManager));
         entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
 
-        //TODO: I should probably rewrite this so that it is just a static function.
-        fovCalculator = new RayCastVisibility();
-
         //Multiply the height  by aspect ratio.
         camera = new OrthographicCamera(16 * 80, 50 * 16);
 
         dTPWorld = new DungeonToPhysicsWorld(entityManager.getComponent(mapUUID, MapComponent.class), world);
         dTPWorld.GeneratePhysicsBodies(entityManager);
 
+        rayHandler = new RayHandler(world);
+        rayHandler.setShadows(false);
+
+
     }
 
     public void processInput() {
-        /*
+        float VELOCITY = 1000f;
+        Vector2 newVelocity = new Vector2(0,0);
+
         if(moveLeft.value() > 0 ){
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    -1,
-                    0,
-                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
-            fovRecompute = true;
+            newVelocity.x = -VELOCITY;
         }
         else if( moveRight.value() > 0 ) {
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    10,
-                    0,
-                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
-            fovRecompute = true;
+            newVelocity.x = VELOCITY;
         }
-        else if( moveUp.value() > 0) {
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    0,
-                    10,
-                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
-            fovRecompute = true;
+        else {
+            newVelocity.x = 0;
+        }
+
+        if( moveUp.value() > 0) {
+            newVelocity.y = VELOCITY;
         }
         else if( moveDown.value() > 0) {
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    0,
-                    -10,
-                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
-            fovRecompute = true;
+            newVelocity.y = -VELOCITY;
         }
-        */
-
-        if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-            //Move left
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    -10f,
-                    0f);
-
+        else {
+           newVelocity.y = 0;
         }
+
+        entityManager.getComponent(playerUUID, PhysicsComponent.class).body.setLinearVelocity(newVelocity);
     }
 
     public void update(float delta) {
-        //Process event queue.
-        while(!EventQueue.getInstance().events.isEmpty()) {
-            EventQueue.getInstance().events.removeFirst().Execute();
-        }
     }
 
     public void render(Batch batch) {
@@ -166,7 +140,10 @@ public class RogueLikeScreen2 implements BaseScreen{
         moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.W));
 
     }
+
     @Override
     public void dispose() {
+        world.dispose();
+        rayHandler.dispose();
     }
 }

@@ -1,10 +1,7 @@
 package com.sad.function.rogue;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.sad.function.rogue.components.MapComponent;
 import com.sad.function.rogue.components.PhysicsComponent;
 import com.sad.function.rogue.components.PlayerComponent;
@@ -16,7 +13,6 @@ import java.util.UUID;
 public class DungeonToPhysicsWorld {
     private World world;
     private MapComponent map;
-
     public DungeonToPhysicsWorld(MapComponent map, World world) {
         this.map = map;
         this.world = world;
@@ -49,14 +45,25 @@ public class DungeonToPhysicsWorld {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.fixedRotation = true; //Prevent my dynamic bodies from rotating.
+
         bodyDef.position.set(
                 entityManager.getComponent(player, TransformComponent.class).x * 16 + 8,
                 entityManager.getComponent(player, TransformComponent.class).y * 16 + 8
         );
 
         Body playerBody = world.createBody(bodyDef);
-        polyBox.setAsBox(8, 8);
+        polyBox.setAsBox(7, 7); //Slightly smaller box.
+
         playerBody.createFixture(polyBox, 0.5f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = polyBox;
+        fixtureDef.density = 0.0f;
+        fixtureDef.friction = 1f;
+        fixtureDef.restitution = 0.0f;
+
+        Fixture fixture = playerBody.createFixture(fixtureDef);
 
         entityManager.addComponent(player, new PhysicsComponent(playerBody));
         polyBox.dispose();
