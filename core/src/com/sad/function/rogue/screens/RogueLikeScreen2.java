@@ -1,8 +1,10 @@
 package com.sad.function.rogue.screens;
 
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -41,6 +43,7 @@ public class RogueLikeScreen2 implements BaseScreen{
     private DungeonToPhysicsWorld dTPWorld;
     private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
+    private PointLight fuckingTorch;
     public RogueLikeScreen2() {
         setupActions();
 
@@ -62,12 +65,15 @@ public class RogueLikeScreen2 implements BaseScreen{
 
         rayHandler = new RayHandler(world);
         rayHandler.setShadows(false);
+        rayHandler.setAmbientLight(1f);
 
-
+        fuckingTorch = new PointLight(rayHandler, 32, Color.CYAN, 10, 0,0 );
+        fuckingTorch.attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
+        fuckingTorch.setXray(true);
     }
 
     public void processInput() {
-        float VELOCITY = 1000f;
+        float VELOCITY = 10f;
         Vector2 newVelocity = new Vector2(0,0);
 
         if(moveLeft.value() > 0 ){
@@ -90,6 +96,9 @@ public class RogueLikeScreen2 implements BaseScreen{
            newVelocity.y = 0;
         }
 
+        if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+            camera.zoom = camera.zoom / 2;
+        }
         entityManager.getComponent(playerUUID, PhysicsComponent.class).body.setLinearVelocity(newVelocity);
     }
 
@@ -121,9 +130,12 @@ public class RogueLikeScreen2 implements BaseScreen{
         batch.begin();
 
         batch.end();
-        
+
+        rayHandler.setCombinedMatrix(camera);
+        rayHandler.updateAndRender();
         //Step the physics simulation.
         world.step(1/60f, 6, 2);
+
     }
 
     private void setupActions() {
