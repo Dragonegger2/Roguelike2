@@ -13,7 +13,6 @@ import com.sad.function.rogue.DungeonToPhysicsWorld;
 import com.sad.function.rogue.components.MapComponent;
 import com.sad.function.rogue.components.PhysicsComponent;
 import com.sad.function.rogue.components.PlayerComponent;
-import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.EntityManager;
 import com.sad.function.rogue.systems.input.Action;
@@ -98,12 +97,13 @@ public class RogueLikeScreen2 implements BaseScreen{
     }
 
     public void render(Batch batch) {
+
         UUID playerUUID = entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
 
         //Follow player.
         camera.position.set(
-                entityManager.getComponent(playerUUID, TransformComponent.class).x * 16,
-                entityManager.getComponent(playerUUID, TransformComponent.class).y * 16,
+                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().x ,
+                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().y,
                 0
         );
 
@@ -115,9 +115,14 @@ public class RogueLikeScreen2 implements BaseScreen{
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
+        //Render box2d world.
         debugRenderer.render(world, camera.combined);
 
+        batch.begin();
+
+        batch.end();
+        
+        //Step the physics simulation.
         world.step(1/60f, 6, 2);
     }
 

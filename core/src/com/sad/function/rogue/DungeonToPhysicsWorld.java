@@ -53,7 +53,7 @@ public class DungeonToPhysicsWorld {
         );
 
         Body playerBody = world.createBody(bodyDef);
-        polyBox.setAsBox(7, 7); //Slightly smaller box.
+        polyBox.setAsBox(6.5f, 6.5f); //Slightly smaller box.
 
         playerBody.createFixture(polyBox, 0.5f);
 
