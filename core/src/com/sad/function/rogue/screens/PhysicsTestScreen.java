@@ -2,15 +2,17 @@ package com.sad.function.rogue.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 
-public class CameraTestScreen implements BaseScreen{
+public class PhysicsTestScreen implements BaseScreen{
+    private World world = new World(new Vector2(0,0),false );
+    private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
-    OrthographicCamera camera;
+    public PhysicsTestScreen() {
 
-    public CameraTestScreen() {
-        camera = new OrthographicCamera();
     }
 
     public void processInput() {

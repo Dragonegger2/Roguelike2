@@ -76,6 +76,9 @@ project(":core") {
         // https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-box2d
         compile group: 'com.badlogicgames.gdx', name: 'gdx-box2d', version: '1.9.8'
 
+        // https://mvnrepository.com/artifact/com.badlogicgames.box2dlights/box2dlights
+        compile group: 'com.badlogicgames.box2dlights', name: 'box2dlights', version: '1.4'
+
     }
 }
 
