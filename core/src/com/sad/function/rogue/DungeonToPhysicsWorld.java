@@ -12,6 +12,8 @@ public class DungeonToPhysicsWorld {
     private MapComponent map;
 
     private float WORLD_TO_BOX = 1/16f;
+    private SpriteComponent defaultDungeonWall;
+
     public DungeonToPhysicsWorld(MapComponent map, World world) {
         this.map = map;
         this.world = world;
@@ -21,11 +23,12 @@ public class DungeonToPhysicsWorld {
     public void GeneratePhysicsBodies(EntityManager entityManager) {
 
         PolygonShape polyBox = new PolygonShape();
+        defaultDungeonWall = new SpriteComponent("DungeonWallLight.png");
 
         for(int x = 0; x < map.dungeon.MAP_WIDTH; x++ ) {
             for(int y = 0; y < map.dungeon.MAP_HEIGHT; y++ ) {
                 BodyDef groundBodyDef = new BodyDef();
-                groundBodyDef.position.set(new Vector2((x * 16 + 8) * WORLD_TO_BOX , (y * 16 + 8) * WORLD_TO_BOX ));
+                groundBodyDef.position.set(new Vector2((x * 16 + 8) * WORLD_TO_BOX  , (y * 16 + 8) * WORLD_TO_BOX));
 
                 Body wallBody = world.createBody(groundBodyDef);
 
@@ -38,13 +41,18 @@ public class DungeonToPhysicsWorld {
 
                     UUID wallUUID = entityManager.createEntity();
                     entityManager.addComponent(wallUUID, new PhysicsComponent(wallBody));
-                    entityManager.addComponent(wallUUID, new SpriteComponent("DungeonWallLight.png"));
+                    entityManager.addComponent(wallUUID, defaultDungeonWall);
                 }
             }
         }
 
 
+        CreatePlayer(entityManager);
 
+        polyBox.dispose();
+    }
+
+    private void CreatePlayer(EntityManager entityManager) {
         //Create Player and other entities boxes.
         UUID player = entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();//Get just the first one (in our game there's only one player.)
 
@@ -53,7 +61,7 @@ public class DungeonToPhysicsWorld {
         bodyDef.fixedRotation = true; //Prevent my dynamic bodies from rotating.
 
         bodyDef.position.set(
-                (entityManager.getComponent(player, TransformComponent.class).x * 16 + 8) * WORLD_TO_BOX,
+                (entityManager.getComponent(player, TransformComponent.class).x * 16 + 8) * WORLD_TO_BOX ,
                 (entityManager.getComponent(player, TransformComponent.class).y * 16 + 8) * WORLD_TO_BOX
         );
         Body playerBody = world.createBody(bodyDef);
@@ -71,6 +79,5 @@ public class DungeonToPhysicsWorld {
         Fixture fixture = playerBody.createFixture(fixtureDef);
 
         entityManager.addComponent(player, new PhysicsComponent(playerBody));
-        polyBox.dispose();
     }
 }

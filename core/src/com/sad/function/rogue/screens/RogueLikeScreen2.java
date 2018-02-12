@@ -25,6 +25,8 @@ import com.sad.function.rogue.systems.input.KeyBoardGameInput;
 import java.util.UUID;
 
 public class RogueLikeScreen2 implements BaseScreen{
+    private static final float BOX_TO_WORLD = 16;
+    private static final float WORLD_TO_BOW = 1/16;
 
     private EntityManager entityManager;
 
@@ -78,7 +80,7 @@ public class RogueLikeScreen2 implements BaseScreen{
     }
 
     public void processInput() {
-        float VELOCITY = 10f;
+        float VELOCITY = 1000f;
         Vector2 newVelocity = new Vector2(0,0);
 
         if(moveLeft.value() > 0 ){
@@ -104,6 +106,10 @@ public class RogueLikeScreen2 implements BaseScreen{
         if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
             camera.zoom = camera.zoom / 2;
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+            camera.zoom *= 2;
+        }
+
         entityManager.getComponent(playerUUID, PhysicsComponent.class).body.setLinearVelocity(newVelocity);
     }
 
@@ -111,13 +117,12 @@ public class RogueLikeScreen2 implements BaseScreen{
     }
 
     public void render(Batch batch) {
-
         UUID playerUUID = entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
 
         //Follow player. Make sure you convert to world COORDINATES
         camera.position.set(
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().x * 16,
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().y * 16,
+                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().x * BOX_TO_WORLD,
+                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().y * BOX_TO_WORLD,
                 0
         );
 
@@ -130,15 +135,16 @@ public class RogueLikeScreen2 implements BaseScreen{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //Render box2d world.
-        debugRenderer.render(world, camera.combined);
 
         batch.begin();
-        renderingSystem.run(batch, entityManager);
-
+            renderingSystem.run(batch, entityManager);
         batch.end();
+
+        debugRenderer.render(world, camera.combined);
 
         rayHandler.setCombinedMatrix(camera);
         rayHandler.updateAndRender();
+
         //Step the physics simulation.
         world.step(1/60f, 6, 2);
 
