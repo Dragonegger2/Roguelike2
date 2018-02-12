@@ -16,7 +16,9 @@ import com.sad.function.rogue.components.MapComponent;
 import com.sad.function.rogue.components.PhysicsComponent;
 import com.sad.function.rogue.components.PlayerComponent;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
+import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
+import com.sad.function.rogue.systems.RenderingSystem;
 import com.sad.function.rogue.systems.input.Action;
 import com.sad.function.rogue.systems.input.KeyBoardGameInput;
 
@@ -44,6 +46,9 @@ public class RogueLikeScreen2 implements BaseScreen{
     private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     private PointLight fuckingTorch;
+
+    private RenderingSystem renderingSystem = new RenderingSystem();
+
     public RogueLikeScreen2() {
         setupActions();
 
@@ -67,7 +72,7 @@ public class RogueLikeScreen2 implements BaseScreen{
         rayHandler.setShadows(false);
         rayHandler.setAmbientLight(1f);
 
-        fuckingTorch = new PointLight(rayHandler, 32, Color.CYAN, 10, 0,0 );
+        fuckingTorch = new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 );
         fuckingTorch.attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
         fuckingTorch.setXray(true);
     }
@@ -109,10 +114,10 @@ public class RogueLikeScreen2 implements BaseScreen{
 
         UUID playerUUID = entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
 
-        //Follow player.
+        //Follow player. Make sure you convert to world COORDINATES
         camera.position.set(
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().x ,
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().y,
+                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().x * 16,
+                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().y * 16,
                 0
         );
 
@@ -128,6 +133,7 @@ public class RogueLikeScreen2 implements BaseScreen{
         debugRenderer.render(world, camera.combined);
 
         batch.begin();
+        renderingSystem.run(batch, entityManager);
 
         batch.end();
 
@@ -162,5 +168,6 @@ public class RogueLikeScreen2 implements BaseScreen{
     public void dispose() {
         world.dispose();
         rayHandler.dispose();
+        AssetManager.getInstance().dispose();
     }
 }

@@ -1,7 +1,7 @@
 package com.sad.function.rogue.components;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.sad.function.rogue.systems.AssetManager;
 
 /**
  * Component for static assets that are rendered to the screen.z
@@ -10,7 +10,7 @@ public class SpriteComponent extends Component {
 
     public SpriteComponent(String textureLocation) {
         super();
-        sprite = new Texture(textureLocation);
+        sprite = AssetManager.getInstance().forceLoadAndReturnOfTexture(textureLocation);
     }
 
     public SpriteComponent(Texture sprite) {

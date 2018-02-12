@@ -2,10 +2,7 @@ package com.sad.function.rogue;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.sad.function.rogue.components.MapComponent;
-import com.sad.function.rogue.components.PhysicsComponent;
-import com.sad.function.rogue.components.PlayerComponent;
-import com.sad.function.rogue.components.TransformComponent;
+import com.sad.function.rogue.components.*;
 import com.sad.function.rogue.systems.EntityManager;
 
 import java.util.UUID;
@@ -28,7 +25,7 @@ public class DungeonToPhysicsWorld {
         for(int x = 0; x < map.dungeon.MAP_WIDTH; x++ ) {
             for(int y = 0; y < map.dungeon.MAP_HEIGHT; y++ ) {
                 BodyDef groundBodyDef = new BodyDef();
-                groundBodyDef.position.set(new Vector2(x , y ));
+                groundBodyDef.position.set(new Vector2((x * 16 + 8) * WORLD_TO_BOX , (y * 16 + 8) * WORLD_TO_BOX ));
 
                 Body wallBody = world.createBody(groundBodyDef);
 
@@ -36,11 +33,17 @@ public class DungeonToPhysicsWorld {
                     //TODO Add a flag to check if it's blocked because of an entity. Entities are something else entirely.
 
                     //Create a solid physics body.
-                    polyBox.setAsBox(0.5f, 0.5f);
+                    polyBox.setAsBox(8 * WORLD_TO_BOX, 8 * WORLD_TO_BOX);
                     wallBody.createFixture(polyBox, 0.0f);
+
+                    UUID wallUUID = entityManager.createEntity();
+                    entityManager.addComponent(wallUUID, new PhysicsComponent(wallBody));
+                    entityManager.addComponent(wallUUID, new SpriteComponent("DungeonWallLight.png"));
                 }
             }
         }
+
+
 
         //Create Player and other entities boxes.
         UUID player = entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();//Get just the first one (in our game there's only one player.)
@@ -54,12 +57,13 @@ public class DungeonToPhysicsWorld {
                 (entityManager.getComponent(player, TransformComponent.class).y * 16 + 8) * WORLD_TO_BOX
         );
         Body playerBody = world.createBody(bodyDef);
-        polyBox.setAsBox(6.5f * WORLD_TO_BOX, 6.5f * WORLD_TO_BOX); //Slightly smaller box.
 
-        playerBody.createFixture(polyBox, 0.5f);
+        CircleShape playerCircle = new CircleShape();
+        playerCircle.setRadius(6.5f * WORLD_TO_BOX);
+//        playerBody.createFixture(polyBox, 0.5f);
 
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = polyBox;
+        fixtureDef.shape = playerCircle;
         fixtureDef.density = 0.0f;
         fixtureDef.friction = 1f;
         fixtureDef.restitution = 0.0f;
