@@ -26,9 +26,13 @@ public class RenderingSystem {
     public void run(Batch batch, EntityManager em) {
 
         for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] { SpriteComponent.class, PhysicsComponent.class })) {
+            //get the PhysicsComponent once. Maybe it saves a bunch of lookups, who knows? I probably should.
+            PhysicsComponent tmp = em.getComponent(entity, PhysicsComponent.class);
             batch.draw(em.getComponent(entity, SpriteComponent.class).sprite,
-                    em.getComponent(entity, PhysicsComponent.class).body.getPosition().x * 16,
-                    em.getComponent(entity, PhysicsComponent.class).body.getPosition().y * 16);
+                    tmp.body.getPosition().x - 0.5f ,
+                    tmp.body.getPosition().y - 0.5f,
+                    1,
+                    1);
 
         }
 

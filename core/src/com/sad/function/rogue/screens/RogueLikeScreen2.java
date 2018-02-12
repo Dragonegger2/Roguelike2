@@ -65,22 +65,23 @@ public class RogueLikeScreen2 implements BaseScreen{
         entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
 
         //Multiply the height  by aspect ratio.
-        camera = new OrthographicCamera(16 * 80, 50 * 16);
+        camera = new OrthographicCamera(80, 50);
 
         dTPWorld = new DungeonToPhysicsWorld(entityManager.getComponent(mapUUID, MapComponent.class), world);
         dTPWorld.GeneratePhysicsBodies(entityManager);
 
         rayHandler = new RayHandler(world);
-        rayHandler.setShadows(false);
-        rayHandler.setAmbientLight(1f);
+        rayHandler.setShadows(true);
+        rayHandler.setAmbientLight(0.1f, 0.1f, 0.1f, 1f);
 
         fuckingTorch = new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 );
         fuckingTorch.attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
         fuckingTorch.setXray(true);
+
     }
 
     public void processInput() {
-        float VELOCITY = 1000f;
+        float VELOCITY = 10f;
         Vector2 newVelocity = new Vector2(0,0);
 
         if(moveLeft.value() > 0 ){
@@ -117,12 +118,16 @@ public class RogueLikeScreen2 implements BaseScreen{
     }
 
     public void render(Batch batch) {
+        //Step the physics simulation.
+        world.step(1/60f, 6, 2);
+
+
         UUID playerUUID = entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
 
         //Follow player. Make sure you convert to world COORDINATES
         camera.position.set(
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().x * BOX_TO_WORLD,
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().y * BOX_TO_WORLD,
+                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().x ,
+                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().y ,
                 0
         );
 
@@ -144,9 +149,6 @@ public class RogueLikeScreen2 implements BaseScreen{
 
         rayHandler.setCombinedMatrix(camera);
         rayHandler.updateAndRender();
-
-        //Step the physics simulation.
-        world.step(1/60f, 6, 2);
 
     }
 

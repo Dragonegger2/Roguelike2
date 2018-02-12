@@ -67,7 +67,7 @@ public class DungeonToPhysicsWorld {
         Body playerBody = world.createBody(bodyDef);
 
         CircleShape playerCircle = new CircleShape();
-        playerCircle.setRadius(6.5f * WORLD_TO_BOX);
+        playerCircle.setRadius(7.5f * WORLD_TO_BOX);
 //        playerBody.createFixture(polyBox, 0.5f);
 
         FixtureDef fixtureDef = new FixtureDef();
