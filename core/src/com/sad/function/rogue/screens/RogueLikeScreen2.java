@@ -32,17 +32,19 @@ public class RogueLikeScreen2 implements BaseScreen{
     private EntityManager entityManager;
 
     //BOX2D Stuff
-    //No gravity, hence why y is zero.
     private World world = new World(new Vector2(0, 0), false);
     private RayHandler rayHandler;
 
+    //World Camera
     private FollowEntityCamera camera;
+    //TODO: Create another camera for UI rendering.
+
+    //TODO: Turn this into a generator/emitter.
     private DungeonToPhysicsWorld dTPWorld;
+
     private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
-    private RenderingSystem renderingSystem = new RenderingSystem();
-
-    GameContext contextList = new GameContext();
+    private GameContext contextList = new GameContext();
 
     public RogueLikeScreen2() {
         setupActions();
@@ -127,7 +129,7 @@ public class RogueLikeScreen2 implements BaseScreen{
         //Render box2d world.
 
         batch.begin();
-            renderingSystem.run(batch, entityManager);
+            RenderingSystem.run(batch, entityManager);
         batch.end();
 
         rayHandler.setCombinedMatrix(camera);

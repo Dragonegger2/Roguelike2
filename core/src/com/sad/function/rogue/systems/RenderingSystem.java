@@ -16,15 +16,7 @@ import java.util.UUID;
 public class RenderingSystem {
     private static final float WORLD_TO_BOX = 1/16f;
 
-    public RenderingSystem() {
-        init();
-    }
-
-    public void init() {
-
-    }
-
-    public void run(Batch batch, EntityManager em) {
+    public static void run(Batch batch, EntityManager em) {
 
         for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] { SpriteComponent.class, PhysicsComponent.class })) {
             //get the PhysicsComponent once. Maybe it saves a bunch of lookups, who knows? I probably should.
