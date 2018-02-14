@@ -72,11 +72,13 @@ public class RogueLikeScreen2 implements BaseScreen{
 
         rayHandler = new RayHandler(world);
         rayHandler.setShadows(true);
-        rayHandler.setAmbientLight(0.1f, 0.1f, 0.1f, 1f);
+//        rayHandler.setAmbientLight(0.1f, 0.1f, 0.1f, 1f);
 
         fuckingTorch = new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 );
         fuckingTorch.attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
         fuckingTorch.setXray(true);
+
+        camera.zoom /= 4;
 
     }
 
@@ -144,8 +146,6 @@ public class RogueLikeScreen2 implements BaseScreen{
         batch.begin();
             renderingSystem.run(batch, entityManager);
         batch.end();
-
-        debugRenderer.render(world, camera.combined);
 
         rayHandler.setCombinedMatrix(camera);
         rayHandler.updateAndRender();
