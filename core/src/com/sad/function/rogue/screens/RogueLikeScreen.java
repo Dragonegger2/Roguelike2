@@ -1,202 +1,177 @@
 package com.sad.function.rogue.screens;
 
-public class RogueLikeScreen {//} implements BaseScreen{
-  /*  private RayCastVisibility fovCalculator;
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
+import com.sad.function.rogue.DungeonToPhysicsWorld;
+import com.sad.function.rogue.FollowEntityCamera;
+import com.sad.function.rogue.components.MapComponent;
+import com.sad.function.rogue.components.PhysicsComponent;
+import com.sad.function.rogue.components.PlayerComponent;
+import com.sad.function.rogue.objects.builder.PlayerBuilder;
+import com.sad.function.rogue.systems.AssetManager;
+import com.sad.function.rogue.systems.EntityManager;
+import com.sad.function.rogue.systems.RenderingSystem;
+import com.sad.function.rogue.systems.input.Action;
+import com.sad.function.rogue.systems.input.GameContext;
+import com.sad.function.rogue.systems.input.KeyBoardGameInput;
 
-    private boolean fovRecompute = true;
+import java.util.UUID;
+
+public class RogueLikeScreen implements BaseScreen{
+    private static final float BOX_TO_WORLD = 16;
+    private static final float WORLD_TO_BOW = 1/16;
 
     private EntityManager entityManager;
 
-    //NameOfAction, Matching State?
-
-    //Map<String, KeyState> inputMap;
-    //Context has Actions tied to Inputs
-        //Actions are the events that I dispatch to the event queue.
-
-    private UUID mapUUID;
-    private UUID playerUUID;
-
-    private Action moveLeft;
-    private Action moveRight;
-    private Action moveUp;
-    private Action moveDown;
-
     //BOX2D Stuff
-    //No gravity, hence why y is zero.
     private World world = new World(new Vector2(0, 0), false);
+    private RayHandler rayHandler;
 
-    private OrthographicCamera camera;
+    //World Camera
+    private FollowEntityCamera camera;
+    //TODO: Create another camera for UI rendering.
+
+    //TODO: Turn this into a generator/emitter.
     private DungeonToPhysicsWorld dTPWorld;
+
     private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+
+    private GameContext contextList = new GameContext();
 
     public RogueLikeScreen() {
         setupActions();
 
         entityManager = new EntityManager();
-        mapUUID = entityManager.createEntity();
+        UUID mapUUID = entityManager.createEntity();
 
         //Create the player.
-        playerUUID = PlayerBuilder.createPlayer(entityManager);
+        UUID playerUUID = PlayerBuilder.createPlayer(entityManager);
 
         //Create map object and then generate the dungeon.
         entityManager.addComponent(mapUUID, new MapComponent(entityManager));
         entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
 
-        //TODO: I should probably rewrite this so that it is just a static function.
-        fovCalculator = new RayCastVisibility();
-
         //Multiply the height  by aspect ratio.
-        camera = new OrthographicCamera(16 * 80, 50 * 16);
 
         dTPWorld = new DungeonToPhysicsWorld(entityManager.getComponent(mapUUID, MapComponent.class), world);
         dTPWorld.GeneratePhysicsBodies(entityManager);
 
+        rayHandler = new RayHandler(world);
+        rayHandler.setShadows(true);
+
+        new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
+        new PointLight(rayHandler, 16, Color.RED, 7, 0,0).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
+
+        camera = new FollowEntityCamera(80, 50, playerUUID, entityManager);
+        camera.zoom /= 4;
     }
 
     public void processInput() {
-        *//*
-        if(moveLeft.value() > 0 ){
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    -1,
-                    0,
-                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
-            fovRecompute = true;
-        }
-        else if( moveRight.value() > 0 ) {
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    10,
-                    0,
-                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
-            fovRecompute = true;
-        }
-        else if( moveUp.value() > 0) {
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    0,
-                    10,
-                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
-            fovRecompute = true;
-        }
-        else if( moveDown.value() > 0) {
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    0,
-                    -10,
-                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
-            fovRecompute = true;
-        }
-        *//*
+        float VELOCITY = 10f;
+        Vector2 newVelocity = new Vector2(0,0);
 
-        if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-            //Move left
-            entityManager.getComponent(playerUUID, MoverComponent2.class).move(
-                    -10f,
-                    0f);
-
+        if(contextList.value("LEFT") > 0 ){
+            newVelocity.x = -VELOCITY;
         }
+        else if( contextList.value("RIGHT") > 0 ) {
+            newVelocity.x = VELOCITY;
+        }
+        else {
+            newVelocity.x = 0;
+        }
+
+        if( contextList.value("UP")  > 0) {
+            newVelocity.y = VELOCITY;
+        }
+        else if( contextList.value("DOWN")  > 0) {
+            newVelocity.y = -VELOCITY;
+        }
+        else {
+           newVelocity.y = 0;
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+            camera.zoom = camera.zoom / 2;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+            camera.zoom *= 2;
+        }
+
+        //Get player uuid
+
+        entityManager.getComponent(
+                entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next(),
+                PhysicsComponent.class).body.setLinearVelocity(newVelocity);
     }
 
     public void update(float delta) {
-        //Process event queue.
-        while(!EventQueue.getInstance().events.isEmpty()) {
-            EventQueue.getInstance().events.removeFirst().Execute();
-        }
     }
 
     public void render(Batch batch) {
-        UUID playerUUID = entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
+        //Step the physics simulation.
+        world.step(1/60f, 6, 2);
 
-        camera.position.set(
-                entityManager.getComponent(playerUUID, TransformComponent.class).x * 16,
-                entityManager.getComponent(playerUUID, TransformComponent.class).y * 16,
-                0
-        );
-
+        //Update the project matrix and then set the batch project matrix.
         camera.update();
-
         batch.setProjectionMatrix(camera.combined);
 
+        //Clear buffer before rendering.
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
-        if(fovRecompute) {
-            fovRecompute = false;
-            Set<UUID> lightSources = entityManager.getAllEntitiesPossessingComponents(new Class[] {LightSourceComponent.class, TransformComponent.class});
-            for (UUID source: lightSources) {
-                fovCalculator.Compute(entityManager.getComponent(mapUUID, MapComponent.class).dungeon,
-                        entityManager.getComponent(source, TransformComponent.class).x,
-                        entityManager.getComponent(source, TransformComponent.class).y,
-                        entityManager.getComponent(source, LightSourceComponent.class).lightLevel);
-            }
-        }
-
+        //Render box2d world.
         batch.begin();
-
-        for(int x = 0; x < entityManager.getComponent(mapUUID, MapComponent.class).dungeon.MAP_WIDTH; x++) {
-            for(int y = 0; y < entityManager.getComponent(mapUUID, MapComponent.class).dungeon.MAP_HEIGHT; y++) {
-                boolean visible = fovCalculator.isVisible(x, y);
-                boolean wall = entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map[x][y].blockSight;
-                if(!visible) {
-                    //Players can't see these things if they aren't explored.
-                    if(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map[x][y].explored) {
-                        //Outside of FOV
-                        if (wall) {
-                            //dark wall
-                            batch.draw(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.wallDark, x * 16, y * 16);
-                        } else {
-                            //dark ground
-                            batch.draw(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.floorDark, x * 16, y * 16);
-                        }
-                    }
-                }
-                else {
-                    //Player can see it.
-                    if (wall) {
-                        batch.draw(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.wallLit, x * 16, y * 16);
-                    } else {
-                        batch.draw(entityManager.getComponent(mapUUID, MapComponent.class).dungeon.floorLit, x * 16, y * 16);
-                    }
-                    entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map[x][y].explored = true;
-                }
-            }
-        }
-
-//        Set<UUID> drawables = entityManager.getAllEntitiesPossessingComponents(new Class[]{TransformComponent.class, SpriteComponent.class});
-//        for (UUID drawable: drawables
-//             ) {
-//            batch.draw(entityManager.getComponent(drawable, SpriteComponent.class).sprite,
-//                    entityManager.getComponent(drawable, TransformComponent.class).x * 16,
-//                    entityManager.getComponent(drawable, TransformComponent.class).y * 16);
-//        }
-        batch.draw(entityManager.getComponent(playerUUID, SpriteComponent.class).sprite,
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().x - 8,
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().y - 8 ) ;
-
+            RenderingSystem.run(batch, entityManager);
         batch.end();
-        debugRenderer.render(world, camera.combined);
 
-        world.step(1/60f, 6, 2);
+        rayHandler.setCombinedMatrix(camera);
+        rayHandler.updateAndRender();
     }
 
     private void setupActions() {
+        contextList = new GameContext();
 
-        moveLeft = new Action();
-        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.LEFT));
-        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.A));
+        contextList.registerActionToContext("LEFT",
+            new Action(
+              new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.LEFT),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.A)
+            )
+        );
 
-        moveRight = new Action();
-        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.RIGHT));
-        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.D));
+        contextList.registerActionToContext("RIGHT",
+            new Action(
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.RIGHT),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.D)
+            )
+        );
 
-        moveDown = new Action();
-        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.DOWN));
-        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.S));
+        contextList.registerActionToContext("UP",
+            new Action(
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.UP),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.W)
+            )
+        );
 
-        moveUp = new Action();
-        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.UP));
-        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.W));
-
+        contextList.registerActionToContext("DOWN",
+            new Action(
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.DOWN),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.S)
+            )
+        );
     }
+
     @Override
     public void dispose() {
-    }*/
+        world.dispose();
+        rayHandler.dispose();
+        AssetManager.getInstance().dispose();
+    }
 }
