@@ -14,11 +14,13 @@ import com.sad.function.rogue.DungeonToPhysicsWorld;
 import com.sad.function.rogue.FollowEntityCamera;
 import com.sad.function.rogue.components.MapComponent;
 import com.sad.function.rogue.components.PhysicsComponent;
+import com.sad.function.rogue.components.PlayerComponent;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
 import com.sad.function.rogue.systems.RenderingSystem;
 import com.sad.function.rogue.systems.input.Action;
+import com.sad.function.rogue.systems.input.GameContext;
 import com.sad.function.rogue.systems.input.KeyBoardGameInput;
 
 import java.util.UUID;
@@ -28,14 +30,6 @@ public class RogueLikeScreen2 implements BaseScreen{
     private static final float WORLD_TO_BOW = 1/16;
 
     private EntityManager entityManager;
-
-    private UUID mapUUID;
-    private UUID playerUUID;
-
-    private Action moveLeft;
-    private Action moveRight;
-    private Action moveUp;
-    private Action moveDown;
 
     //BOX2D Stuff
     //No gravity, hence why y is zero.
@@ -48,14 +42,16 @@ public class RogueLikeScreen2 implements BaseScreen{
 
     private RenderingSystem renderingSystem = new RenderingSystem();
 
+    GameContext contextList = new GameContext();
+
     public RogueLikeScreen2() {
         setupActions();
 
         entityManager = new EntityManager();
-        mapUUID = entityManager.createEntity();
+        UUID mapUUID = entityManager.createEntity();
 
         //Create the player.
-        playerUUID = PlayerBuilder.createPlayer(entityManager);
+        UUID playerUUID = PlayerBuilder.createPlayer(entityManager);
 
         //Create map object and then generate the dungeon.
         entityManager.addComponent(mapUUID, new MapComponent(entityManager));
@@ -79,20 +75,20 @@ public class RogueLikeScreen2 implements BaseScreen{
         float VELOCITY = 10f;
         Vector2 newVelocity = new Vector2(0,0);
 
-        if(moveLeft.value() > 0 ){
+        if(contextList.value("LEFT") > 0 ){
             newVelocity.x = -VELOCITY;
         }
-        else if( moveRight.value() > 0 ) {
+        else if( contextList.value("RIGHT") > 0 ) {
             newVelocity.x = VELOCITY;
         }
         else {
             newVelocity.x = 0;
         }
 
-        if( moveUp.value() > 0) {
+        if( contextList.value("UP")  > 0) {
             newVelocity.y = VELOCITY;
         }
-        else if( moveDown.value() > 0) {
+        else if( contextList.value("DOWN")  > 0) {
             newVelocity.y = -VELOCITY;
         }
         else {
@@ -106,7 +102,11 @@ public class RogueLikeScreen2 implements BaseScreen{
             camera.zoom *= 2;
         }
 
-        entityManager.getComponent(playerUUID, PhysicsComponent.class).body.setLinearVelocity(newVelocity);
+        //Get player uuid
+
+        entityManager.getComponent(
+                entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next(),
+                PhysicsComponent.class).body.setLinearVelocity(newVelocity);
     }
 
     public void update(float delta) {
@@ -132,27 +132,38 @@ public class RogueLikeScreen2 implements BaseScreen{
 
         rayHandler.setCombinedMatrix(camera);
         rayHandler.updateAndRender();
-
     }
 
     private void setupActions() {
+        contextList = new GameContext();
 
-        moveLeft = new Action();
-        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.LEFT));
-        moveLeft.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.A));
+        contextList.registerActionToContext("LEFT",
+            new Action(
+              new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.LEFT),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.A)
+            )
+        );
 
-        moveRight = new Action();
-        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.RIGHT));
-        moveRight.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.D));
+        contextList.registerActionToContext("RIGHT",
+            new Action(
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.RIGHT),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.D)
+            )
+        );
 
-        moveDown = new Action();
-        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.DOWN));
-        moveDown.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.S));
+        contextList.registerActionToContext("UP",
+            new Action(
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.UP),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.W)
+            )
+        );
 
-        moveUp = new Action();
-        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.UP));
-        moveUp.registerInput(new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.W));
-
+        contextList.registerActionToContext("DOWN",
+            new Action(
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.DOWN),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.S)
+            )
+        );
     }
 
     @Override

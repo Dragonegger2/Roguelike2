@@ -11,16 +11,27 @@ import java.util.Map;
  * Actions have input that triggers them.
  */
 public class GameContext {
-    public enum GameContexts { GAME }
+    public enum GameContexts {
+        GAME
+    }
 
-    Map<GameContexts, Action> mappedContexts = new HashMap<>();
+    Map<String, Action> mappedContexts = new HashMap<>();
 
     /**
      * Registers an action to be bound to a context.
-     * @param contextToMapTo
-     * @param gameAction
+     * @param actionName Look up name.
+     * @param gameAction Action that gets fired.
      */
-    public void registerActionToContext(GameContexts contextToMapTo, Action gameAction) {
-        mappedContexts.put(contextToMapTo, gameAction);
+    public void registerActionToContext(String actionName, Action gameAction) {
+        mappedContexts.put(actionName, gameAction);
+    }
+
+    /**
+     * Returns whether any registered input as been fired.
+     * @param actionName
+     * @return
+     */
+    public float value(String actionName) {
+        return mappedContexts.get(actionName).value();
     }
 }

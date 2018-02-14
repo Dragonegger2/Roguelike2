@@ -6,8 +6,19 @@ import java.util.LinkedList;
 public class Action {
     private LinkedList<GameInput> gInputs = new LinkedList<>();
 
-    public void registerInput(GameInput gInput) {
-        gInputs.add(gInput);
+    public Action() {
+
+    }
+
+    public Action(GameInput ... gameInputs) {
+        registerInput(gameInputs);
+    }
+
+    public void registerInput(GameInput ... gInput) {
+        for (GameInput input : gInput
+             ) {
+            gInputs.add(input);
+        }
     }
 
     public float value() {
