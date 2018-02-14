@@ -68,6 +68,7 @@ public class RogueLikeScreen2 implements BaseScreen{
         rayHandler.setShadows(true);
 
         new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
+        new PointLight(rayHandler, 16, Color.RED, 7, 0,0).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
 
         camera = new FollowEntityCamera(80, 50, playerUUID, entityManager);
         camera.zoom /= 4;
@@ -127,7 +128,6 @@ public class RogueLikeScreen2 implements BaseScreen{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //Render box2d world.
-
         batch.begin();
             RenderingSystem.run(batch, entityManager);
         batch.end();
