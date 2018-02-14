@@ -46,8 +46,6 @@ public class RogueLikeScreen2 implements BaseScreen{
     private DungeonToPhysicsWorld dTPWorld;
     private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
-    private PointLight fuckingTorch;
-
     private RenderingSystem renderingSystem = new RenderingSystem();
 
     public RogueLikeScreen2() {
@@ -71,10 +69,7 @@ public class RogueLikeScreen2 implements BaseScreen{
         rayHandler = new RayHandler(world);
         rayHandler.setShadows(true);
 
-        fuckingTorch = new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 );
-        fuckingTorch.attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
-        fuckingTorch.setXray(true);
-
+        new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
 
         camera = new FollowEntityCamera(80, 50, playerUUID, entityManager);
         camera.zoom /= 4;
