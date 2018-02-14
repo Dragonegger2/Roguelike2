@@ -6,15 +6,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.sad.function.rogue.DungeonToPhysicsWorld;
+import com.sad.function.rogue.FollowEntityCamera;
 import com.sad.function.rogue.components.MapComponent;
 import com.sad.function.rogue.components.PhysicsComponent;
-import com.sad.function.rogue.components.PlayerComponent;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
@@ -43,7 +42,7 @@ public class RogueLikeScreen2 implements BaseScreen{
     private World world = new World(new Vector2(0, 0), false);
     private RayHandler rayHandler;
 
-    private OrthographicCamera camera;
+    private FollowEntityCamera camera;
     private DungeonToPhysicsWorld dTPWorld;
     private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
@@ -65,21 +64,20 @@ public class RogueLikeScreen2 implements BaseScreen{
         entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
 
         //Multiply the height  by aspect ratio.
-        camera = new OrthographicCamera(80, 50);
 
         dTPWorld = new DungeonToPhysicsWorld(entityManager.getComponent(mapUUID, MapComponent.class), world);
         dTPWorld.GeneratePhysicsBodies(entityManager);
 
         rayHandler = new RayHandler(world);
         rayHandler.setShadows(true);
-//        rayHandler.setAmbientLight(0.1f, 0.1f, 0.1f, 1f);
 
         fuckingTorch = new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 );
         fuckingTorch.attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
         fuckingTorch.setXray(true);
 
-        camera.zoom /= 4;
 
+        camera = new FollowEntityCamera(80, 50, playerUUID, entityManager);
+        camera.zoom /= 4;
     }
 
     public void processInput() {
@@ -122,16 +120,6 @@ public class RogueLikeScreen2 implements BaseScreen{
     public void render(Batch batch) {
         //Step the physics simulation.
         world.step(1/60f, 6, 2);
-
-
-        UUID playerUUID = entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next();
-
-        //Follow player. Make sure you convert to world COORDINATES
-        camera.position.set(
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().x ,
-                entityManager.getComponent(playerUUID, PhysicsComponent.class).body.getPosition().y ,
-                0
-        );
 
         //Update the project matrix and then set the batch project matrix.
         camera.update();
