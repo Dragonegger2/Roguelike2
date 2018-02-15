@@ -12,9 +12,7 @@ public class PlayerBuilder {
         UUID playerUUID = entityManager.createEntity();
 
         entityManager.addComponent(playerUUID, new TransformComponent(0,0));
-        entityManager.addComponent(playerUUID, new SpriteComponent(new Texture("player3.png")));
-        entityManager.addComponent(playerUUID, new MoverComponent2(entityManager, playerUUID));
-        entityManager.addComponent(playerUUID, new LightSourceComponent());
+        entityManager.addComponent(playerUUID, new SpriteComponent(new Texture("goblin.png")));
         entityManager.addComponent(playerUUID, new PlayerComponent());
 
         return playerUUID;

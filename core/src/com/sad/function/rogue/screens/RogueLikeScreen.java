@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -27,16 +28,19 @@ import java.util.UUID;
 
 public class RogueLikeScreen implements BaseScreen{
     private static final float BOX_TO_WORLD = 16;
-    private static final float WORLD_TO_BOW = 1/16;
+    private static final float WORLD_TO_BOX = 1/16;
 
+    //Entity Manager Stuff.
     private EntityManager entityManager;
 
     //BOX2D Stuff
     private World world = new World(new Vector2(0, 0), false);
+
     private RayHandler rayHandler;
 
     //World Camera
     private FollowEntityCamera camera;
+    private PerspectiveCamera uiCamera;
     //TODO: Create another camera for UI rendering.
 
     //TODO: Turn this into a generator/emitter.
@@ -46,14 +50,16 @@ public class RogueLikeScreen implements BaseScreen{
 
     private GameContext contextList = new GameContext();
 
+    UUID playerUUID;
+    UUID mapUUID;
     public RogueLikeScreen() {
         setupActions();
 
         entityManager = new EntityManager();
-        UUID mapUUID = entityManager.createEntity();
+        mapUUID = entityManager.createEntity();
 
         //Create the player.
-        UUID playerUUID = PlayerBuilder.createPlayer(entityManager);
+        playerUUID = PlayerBuilder.createPlayer(entityManager);
 
         //Create map object and then generate the dungeon.
         entityManager.addComponent(mapUUID, new MapComponent(entityManager));
@@ -67,6 +73,7 @@ public class RogueLikeScreen implements BaseScreen{
         rayHandler = new RayHandler(world);
         rayHandler.setShadows(true);
 
+        //TODO: Add a tweening function that will slowly flicker the lights be modifying the distances.
         new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
         new PointLight(rayHandler, 16, Color.RED, 7, 0,0).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
 
@@ -75,7 +82,9 @@ public class RogueLikeScreen implements BaseScreen{
     }
 
     public void processInput() {
+
         float VELOCITY = 10f;
+
         Vector2 newVelocity = new Vector2(0,0);
 
         if(contextList.value("LEFT") > 0 ){
@@ -95,9 +104,10 @@ public class RogueLikeScreen implements BaseScreen{
             newVelocity.y = -VELOCITY;
         }
         else {
-           newVelocity.y = 0;
+            newVelocity.y = 0;
         }
 
+        //Camera controls.
         if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
             camera.zoom = camera.zoom / 2;
         }
@@ -105,8 +115,7 @@ public class RogueLikeScreen implements BaseScreen{
             camera.zoom *= 2;
         }
 
-        //Get player uuid
-
+        //Apply the velocity.
         entityManager.getComponent(
                 entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next(),
                 PhysicsComponent.class).body.setLinearVelocity(newVelocity);
@@ -136,6 +145,9 @@ public class RogueLikeScreen implements BaseScreen{
         rayHandler.updateAndRender();
     }
 
+    /**
+     * Sets up this current game context and it's actions.
+     */
     private void setupActions() {
         contextList = new GameContext();
 

@@ -6,6 +6,8 @@ import java.util.LinkedList;
 public class Action {
     private LinkedList<GameInput> gInputs = new LinkedList<>();
 
+    //TODO Should also have a command it executes. Maybe?
+
     public Action() {
 
     }
@@ -29,4 +31,5 @@ public class Action {
         }
         return 0;
     }
+
 }

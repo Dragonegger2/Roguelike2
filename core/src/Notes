@@ -1,0 +1,36 @@
+
+        float VELOCITY = 10f;
+        Vector2 newVelocity = new Vector2(0,0);
+
+        if(contextList.value("LEFT") > 0 ){
+            newVelocity.x = -VELOCITY;
+        }
+        else if( contextList.value("RIGHT") > 0 ) {
+            newVelocity.x = VELOCITY;
+        }
+        else {
+            newVelocity.x = 0;
+        }
+
+        if( contextList.value("UP")  > 0) {
+            newVelocity.y = VELOCITY;
+        }
+        else if( contextList.value("DOWN")  > 0) {
+            newVelocity.y = -VELOCITY;
+        }
+        else {
+           newVelocity.y = 0;
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+            camera.zoom = camera.zoom / 2;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+            camera.zoom *= 2;
+        }
+
+        //Get player uuid
+
+        entityManager.getComponent(
+                entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next(),
+                PhysicsComponent.class).body.setLinearVelocity(newVelocity);
