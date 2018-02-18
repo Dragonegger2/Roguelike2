@@ -24,8 +24,8 @@ public class FollowEntityCamera extends OrthographicCamera {
         try {
             //Point to entity:
             this.position.set(
-                    entityManager.getComponent(followTarget, PhysicsComponent.class).body.getPosition().x,
-                    entityManager.getComponent(followTarget, PhysicsComponent.class).body.getPosition().y,
+                    entityManager.getComponent(followTarget, PhysicsComponent.class).body.getPosition().x * 16,
+                    entityManager.getComponent(followTarget, PhysicsComponent.class).body.getPosition().y * 16,
                     0
             );
         }

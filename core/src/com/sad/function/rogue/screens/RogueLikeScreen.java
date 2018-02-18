@@ -4,9 +4,7 @@ import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -41,7 +39,8 @@ public class RogueLikeScreen implements BaseScreen{
 
     //World Camera
     private FollowEntityCamera camera;
-    private PerspectiveCamera uiCamera;
+    private FollowEntityCamera uiCamera;
+
     //TODO: Create another camera for UI rendering.
 
     //TODO: Turn this into a generator/emitter.
@@ -50,6 +49,7 @@ public class RogueLikeScreen implements BaseScreen{
     private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     private GameContext contextList = new GameContext();
+    private Texture t = new Texture("badlogic.jpg");
 
     UUID playerUUID;
     UUID mapUUID;
@@ -71,15 +71,20 @@ public class RogueLikeScreen implements BaseScreen{
         dTPWorld = new DungeonToPhysicsWorld(entityManager.getComponent(mapUUID, MapComponent.class), world);
         dTPWorld.GeneratePhysicsBodies(entityManager);
 
-        rayHandler = new RayHandler(world);
-        rayHandler.setShadows(true);
+//        rayHandler = new RayHandler(world);
+//        rayHandler.setShadows(true);
 
+//        rayHandler.setAmbientLight(Color.DARK_GRAY);
         //TODO: Add a tweening function that will slowly flicker the lights be modifying the distances.
-        new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
-        new PointLight(rayHandler, 16, Color.RED, 7, 0,0).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
+//        new PointLight(rayHandler, 32, Color.YELLOW, 10*16, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
+//        new PointLight(rayHandler, 16, Color.RED, 7*16, 0,0).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
 
-        camera = new FollowEntityCamera(80, 50, playerUUID, entityManager);
+        camera = new FollowEntityCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), playerUUID, entityManager);
         camera.zoom /= 4;
+
+        uiCamera = new FollowEntityCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), playerUUID, entityManager);
+        uiCamera.zoom /= 4;
+
     }
 
     public void processInput() {
@@ -128,7 +133,6 @@ public class RogueLikeScreen implements BaseScreen{
 
         //Update the project matrix and then set the batch project matrix.
         camera.update();
-        batch.setProjectionMatrix(camera.combined);
 
         //Clear buffer before rendering.
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -136,11 +140,17 @@ public class RogueLikeScreen implements BaseScreen{
 
         //Render box2d world.
         batch.begin();
+            batch.setProjectionMatrix(camera.combined);
             RenderingSystem.run(batch, entityManager);
         batch.end();
 
-        rayHandler.setCombinedMatrix(camera);
-        rayHandler.updateAndRender();
+        batch.begin();
+            batch.setProjectionMatrix(uiCamera.combined);
+            batch.draw(t, 0,0);
+        batch.end();
+
+//        rayHandler.setCombinedMatrix(camera);
+//        rayHandler.updateAndRender();
     }
 
     /**

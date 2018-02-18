@@ -25,10 +25,10 @@ public class RenderingSystem {
 
             //Convert all units from world, to the Box2D units.
             batch.draw(spriteTemp.sprite,
-                    tmp.body.getPosition().x - (spriteTemp.sprite.getWidth() * WORLD_TO_BOX / 2),  //DON'T FORGET TO FIX OFFSET, We're using lower-left as the origin and box2d uses the center as an origin.
-                    tmp.body.getPosition().y - (spriteTemp.sprite.getHeight() * WORLD_TO_BOX / 2), //DON'T FORGET TO FIX OFFSET, We're using lower-left as the origin and box2d uses the center as an origin.
-                    spriteTemp.sprite.getWidth() * WORLD_TO_BOX,
-                    spriteTemp.sprite.getHeight() * WORLD_TO_BOX);
+                    tmp.body.getPosition().x * 16,  //DON'T FORGET TO FIX OFFSET, We're using lower-left as the origin and box2d uses the center as an origin.
+                    tmp.body.getPosition().y *  16 , //DON'T FORGET TO FIX OFFSET, We're using lower-left as the origin and box2d uses the center as an origin.
+                    spriteTemp.sprite.getWidth() ,
+                    spriteTemp.sprite.getHeight() );
 
         }
 
