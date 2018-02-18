@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.sad.function.rogue.DungeonToPhysicsWorld;
 import com.sad.function.rogue.FollowEntityCamera;
 import com.sad.function.rogue.components.MapComponent;
+import com.sad.function.rogue.components.MoverComponent;
 import com.sad.function.rogue.components.PhysicsComponent;
 import com.sad.function.rogue.components.PlayerComponent;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
@@ -115,10 +116,7 @@ public class RogueLikeScreen implements BaseScreen{
             camera.zoom *= 2;
         }
 
-        //Apply the velocity.
-        entityManager.getComponent(
-                entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next(),
-                PhysicsComponent.class).body.setLinearVelocity(newVelocity);
+        entityManager.getComponent(entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next(), MoverComponent.class).moveOrAttack(newVelocity.x, newVelocity.y);
     }
 
     public void update(float delta) {
