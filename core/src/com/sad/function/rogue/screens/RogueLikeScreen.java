@@ -72,10 +72,11 @@ public class RogueLikeScreen implements BaseScreen{
 
         rayHandler = new RayHandler(world);
         rayHandler.setShadows(true);
+        rayHandler.useDiffuseLight(true);
 
         //TODO: Add a tweening function that will slowly flicker the lights be modifying the distances.
-        new PointLight(rayHandler, 32, Color.YELLOW, 10, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
-        new PointLight(rayHandler, 16, Color.RED, 7, 0,0).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
+        new PointLight(rayHandler, 32, Color.YELLOW, 15, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
+//        new PointLight(rayHandler, 16, Color.RED, 7, 0,0).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
 
         camera = new FollowEntityCamera(80, 50, playerUUID, entityManager);
         camera.zoom /= 4;
