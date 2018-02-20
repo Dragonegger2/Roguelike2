@@ -1,21 +1,11 @@
 package com.sad.function.rogue.screens;
 
-import box2dLight.PointLight;
-import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
-import com.sad.function.rogue.DungeonToPhysicsWorld;
 import com.sad.function.rogue.FollowEntityCamera;
 import com.sad.function.rogue.components.MapComponent;
-import com.sad.function.rogue.components.PhysicsComponent;
-import com.sad.function.rogue.components.PlayerComponent;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
@@ -33,25 +23,15 @@ public class RogueLikeScreen implements BaseScreen{
     //Entity Manager Stuff.
     private EntityManager entityManager;
 
-    //BOX2D Stuff
-    private World world = new World(new Vector2(0, 0), false);
 
-    private RayHandler rayHandler;
-
-    //World Camera
     private FollowEntityCamera camera;
-    private PerspectiveCamera uiCamera;
-    //TODO: Create another camera for UI rendering.
-
-    //TODO: Turn this into a generator/emitter.
-    private DungeonToPhysicsWorld dTPWorld;
-
-    private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
+//    private PerspectiveCamera uiCamera;
 
     private GameContext contextList = new GameContext();
 
     UUID playerUUID;
     UUID mapUUID;
+
     public RogueLikeScreen() {
         setupActions();
 
@@ -65,48 +45,11 @@ public class RogueLikeScreen implements BaseScreen{
         entityManager.addComponent(mapUUID, new MapComponent(entityManager));
         entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
 
-        //Multiply the height  by aspect ratio.
-
-        dTPWorld = new DungeonToPhysicsWorld(entityManager.getComponent(mapUUID, MapComponent.class), world);
-        dTPWorld.GeneratePhysicsBodies(entityManager);
-
-        rayHandler = new RayHandler(world);
-        rayHandler.setShadows(true);
-        rayHandler.useDiffuseLight(true);
-
-        //TODO: Add a tweening function that will slowly flicker the lights be modifying the distances.
-        new PointLight(rayHandler, 32, Color.YELLOW, 15, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
-//        new PointLight(rayHandler, 16, Color.RED, 7, 0,0).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
-
-        camera = new FollowEntityCamera(80, 50, playerUUID, entityManager);
+        camera = new FollowEntityCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), playerUUID, entityManager);
         camera.zoom /= 4;
     }
 
     public void processInput() {
-
-        float VELOCITY = 10f;
-
-        Vector2 newVelocity = new Vector2(0,0);
-
-        if(contextList.value("LEFT") > 0 ){
-            newVelocity.x = -VELOCITY;
-        }
-        else if( contextList.value("RIGHT") > 0 ) {
-            newVelocity.x = VELOCITY;
-        }
-        else {
-            newVelocity.x = 0;
-        }
-
-        if( contextList.value("UP")  > 0) {
-            newVelocity.y = VELOCITY;
-        }
-        else if( contextList.value("DOWN")  > 0) {
-            newVelocity.y = -VELOCITY;
-        }
-        else {
-            newVelocity.y = 0;
-        }
 
         //Camera controls.
         if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
@@ -115,11 +58,6 @@ public class RogueLikeScreen implements BaseScreen{
         if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
             camera.zoom *= 2;
         }
-
-        //Apply the velocity.
-        entityManager.getComponent(
-                entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next(),
-                PhysicsComponent.class).body.setLinearVelocity(newVelocity);
     }
 
     public void update(float delta) {
@@ -127,7 +65,6 @@ public class RogueLikeScreen implements BaseScreen{
 
     public void render(Batch batch) {
         //Step the physics simulation.
-        world.step(1/60f, 6, 2);
 
         //Update the project matrix and then set the batch project matrix.
         camera.update();
@@ -142,8 +79,6 @@ public class RogueLikeScreen implements BaseScreen{
             RenderingSystem.run(batch, entityManager);
         batch.end();
 
-        rayHandler.setCombinedMatrix(camera);
-        rayHandler.updateAndRender();
     }
 
     /**
@@ -183,8 +118,6 @@ public class RogueLikeScreen implements BaseScreen{
 
     @Override
     public void dispose() {
-        world.dispose();
-        rayHandler.dispose();
         AssetManager.getInstance().dispose();
     }
 }

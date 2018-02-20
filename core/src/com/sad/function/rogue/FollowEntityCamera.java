@@ -1,7 +1,7 @@
 package com.sad.function.rogue;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.sad.function.rogue.components.PhysicsComponent;
+import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.systems.EntityManager;
 
 import java.util.UUID;
@@ -24,8 +24,8 @@ public class FollowEntityCamera extends OrthographicCamera {
         try {
             //Point to entity:
             this.position.set(
-                    entityManager.getComponent(followTarget, PhysicsComponent.class).body.getPosition().x,
-                    entityManager.getComponent(followTarget, PhysicsComponent.class).body.getPosition().y,
+                    entityManager.getComponent(followTarget, TransformComponent.class).x,
+                    entityManager.getComponent(followTarget, TransformComponent.class).y,
                     0
             );
         }
