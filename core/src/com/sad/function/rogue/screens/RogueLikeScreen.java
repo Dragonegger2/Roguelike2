@@ -3,7 +3,11 @@ package com.sad.function.rogue.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.sad.function.rogue.FollowEntityCamera;
 import com.sad.function.rogue.components.MapComponent;
 import com.sad.function.rogue.components.TransformComponent;
@@ -36,6 +40,9 @@ public class RogueLikeScreen implements BaseScreen{
 
     UUID playerUUID;
     UUID mapUUID;
+
+    FrameBuffer lightBuffer;
+    TextureRegion lightBufferRegion;
 
     public RogueLikeScreen() {
         setupActions();
@@ -94,16 +101,16 @@ public class RogueLikeScreen implements BaseScreen{
 
                     boolean visible = rayCastVisibility.isVisible(x,y);
                     boolean wall = map[x][y].blockSight;
-
-                    if(!visible) {
-                        if(map[x][y].explored) {
-                            if(wall)
-                                batch.draw(dungeon.wallDark, x * 16, y * 16);
-                            else
-                                batch.draw(dungeon.floorDark, x * 16 , y * 16);
-                        }
-                    }
-                    else {
+//
+//                    if(!visible) {
+//                        if(map[x][y].explored) {
+//                            if(wall)
+//                                batch.draw(dungeon.wallDark, x * 16, y * 16);
+//                            else
+//                                batch.draw(dungeon.floorDark, x * 16 , y * 16);
+//                        }
+//                    }
+//                    else {
                         if(wall) {
                             batch.draw(dungeon.wallLit, x * 16, y * 16);
                         }
@@ -111,13 +118,31 @@ public class RogueLikeScreen implements BaseScreen{
                             batch.draw(dungeon.floorLit, x * 16, y * 16);
                         }
                         map[x][y].explored = true;
-                    }
+//                    }
 
                 }
             }
 
             //Render all game entities.
             RenderingSystem.run(batch, entityManager);
+
+            Pixmap overlay = new Pixmap(dungeon.MAP_WIDTH * 16, dungeon.MAP_HEIGHT * 16, Pixmap.Format.RGBA8888);
+            overlay.setColor(0, 1, 1, 0.5f);
+            overlay.fillRectangle(0,0, dungeon.MAP_WIDTH * 16, dungeon.MAP_HEIGHT * 16);
+
+            overlay.setBlending(Pixmap.Blending.None);
+            overlay.setColor(1,1,1, 0f);
+
+            overlay.fillCircle(
+                    entityManager.getComponent(playerUUID, TransformComponent.class).x * 16 + 8,
+                    overlay.getHeight() - 8 -entityManager.getComponent(playerUUID, TransformComponent.class).y * 16, //Gross, transformation issues. Pixmap coordinates are top-left 0,0
+                    50);
+            overlay.setBlending(Pixmap.Blending.SourceOver);
+
+            Texture lighting = new Texture(overlay);
+            overlay.dispose();
+
+            batch.draw(lighting, 0,0 );
         batch.end();
 
     }
