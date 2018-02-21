@@ -25,8 +25,8 @@ public class RenderingSystem {
 
             //Convert all units from world, to the Box2D units.
             batch.draw(spriteTemp.sprite,
-                    tmp.x,
-                    tmp.y,
+                    tmp.x * 16,
+                    tmp.y * 16,
                     spriteTemp.sprite.getWidth(),
                     spriteTemp.sprite.getHeight());
 
