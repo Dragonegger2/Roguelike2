@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.sad.function.rogue.FollowEntityCamera;
 import com.sad.function.rogue.components.MapComponent;
+import com.sad.function.rogue.components.TransformComponent;
+import com.sad.function.rogue.objects.Dungeon;
+import com.sad.function.rogue.objects.Tile;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
@@ -13,6 +16,7 @@ import com.sad.function.rogue.systems.RenderingSystem;
 import com.sad.function.rogue.systems.input.Action;
 import com.sad.function.rogue.systems.input.GameContext;
 import com.sad.function.rogue.systems.input.KeyBoardGameInput;
+import com.sad.function.rogue.visibility.RayCastVisibility;
 
 import java.util.UUID;
 
@@ -23,6 +27,7 @@ public class RogueLikeScreen implements BaseScreen{
     //Entity Manager Stuff.
     private EntityManager entityManager;
 
+    private RayCastVisibility rayCastVisibility = new RayCastVisibility();
 
     private FollowEntityCamera camera;
 //    private PerspectiveCamera uiCamera;
@@ -74,8 +79,44 @@ public class RogueLikeScreen implements BaseScreen{
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        //Render box2d world.
         batch.begin();
+
+            Dungeon dungeon = entityManager.getComponent(mapUUID, MapComponent.class).dungeon;
+            Tile[][] map = entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map;
+
+            for(int x = 0; x < map.length; x++) {
+                for(int y = 0; y < map[x].length; y++) {
+                    //TODO Visibility. (Again)
+                    rayCastVisibility.Compute(entityManager.getComponent(mapUUID, MapComponent.class).dungeon,
+                            entityManager.getComponent(playerUUID, TransformComponent.class).x,
+                            entityManager.getComponent(playerUUID, TransformComponent.class).y,
+                            10);
+
+                    boolean visible = rayCastVisibility.isVisible(x,y);
+                    boolean wall = map[x][y].blockSight;
+
+                    if(!visible) {
+                        if(map[x][y].explored) {
+                            if(wall)
+                                batch.draw(dungeon.wallDark, x * 16, y * 16);
+                            else
+                                batch.draw(dungeon.floorDark, x * 16 , y * 16);
+                        }
+                    }
+                    else {
+                        if(wall) {
+                            batch.draw(dungeon.wallLit, x * 16, y * 16);
+                        }
+                        else {
+                            batch.draw(dungeon.floorLit, x * 16, y * 16);
+                        }
+                        map[x][y].explored = true;
+                    }
+
+                }
+            }
+
+            //Render all game entities.
             RenderingSystem.run(batch, entityManager);
         batch.end();
 
