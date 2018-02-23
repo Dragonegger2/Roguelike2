@@ -70,7 +70,7 @@ public class GdxRenderAndLightingSystemTest extends ApplicationAdapter implement
         int height = AssetManager.getInstance().get("bigOlLight.png").getHeight();
 
         UUID newLight = em.createEntity();
-        em.addComponent(newLight, new Light(10, Color.CYAN, "bigOlLight.png"));
+        em.addComponent(newLight, new Light(10, Color.WHITE, "bigOlLight.png"));
         em.addComponent(newLight, new TransformComponent(screenX - width / 2, screenY - height / 2));
 
         return false;

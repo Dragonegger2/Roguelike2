@@ -32,7 +32,8 @@ public class RenderAndLightingSystem {
 
     private static RenderAndLightingSystem _instance;
     private static Color baseColor = new Color(1.0f, 1.0f, 1.0f, 0.99607843f);
-    private static Color shadeColor = new Color(0.3f,0.38f,0.4f,1);
+    private static Color shadeColor = new Color(0.3f,0.3f,0.3f,1);
+//    private static Color shadeColor = new Color(0.3f,0.38f,0.4f,1);
 
     private RenderAndLightingSystem() {
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -112,15 +113,16 @@ public class RenderAndLightingSystem {
     private void renderLights(Batch spriteBatch, EntityManager em) {
         lightBuffer.begin();
             //If we don't clear we get all kinds of artifacts.
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             // setup the right blending
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
             Gdx.gl.glEnable(GL20.GL_BLEND);
 
             // start rendering the lights to our spriteBatch
-            Gdx.gl.glClearColor(0.3f, 0.38f, 0.4f, 1);
-            spriteBatch.begin();
+        Gdx.gl.glClearColor(0.3f, 0.38f, 0.4f, .9f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        spriteBatch.enableBlending();
+        spriteBatch.begin();
 
             for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] {Light.class, TransformComponent.class})) {
                 // set the color of your light (red,green,blue,alpha values)
@@ -142,6 +144,8 @@ public class RenderAndLightingSystem {
         // now we render the lightBuffer to the default "frame buffer"
         // with the right blending !
         Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+//        Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
         spriteBatch.begin();
             spriteBatch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         spriteBatch.end();
