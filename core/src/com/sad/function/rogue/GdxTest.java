@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class GdxTest extends ApplicationAdapter implements InputProcessor {
@@ -22,10 +23,11 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
 
     Texture lightSource, badLogic;
     Sprite sprite;
+    Vector2 position;
 
     @Override
     public void create() {
-
+        position = new Vector2(0,0);
         vector3=new Vector3();
         camera=new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
@@ -51,24 +53,25 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
             spriteBatch.draw(badLogic, 0,0);
         spriteBatch.end();
 
+
         lightBuffer.begin();
+        Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // setup the right blending
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
         Gdx.gl.glEnable(GL20.GL_BLEND);
 
-        // start rendering the lights to our spriteBatch
-        spriteBatch.begin();
+            // start rendering the lights to our spriteBatch
+            spriteBatch.begin();
 
-        // set the color of your light (red,green,blue,alpha values)
-        spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
+                // set the color of your light (red,green,blue,alpha values)
+                spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
 
-        // and render the sprite
-        spriteBatch.draw(lightSource, -1, 0);
-
-        spriteBatch.end();
+                // and render the sprite
+                spriteBatch.draw(lightSource, position.x, position.y);
+            spriteBatch.end();
         lightBuffer.end();
-
 
         // now we render the lightBuffer to the default "frame buffer"
         // with the right blending !
@@ -77,7 +80,6 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
         spriteBatch.begin();
         spriteBatch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         spriteBatch.end();
-
         // post light-rendering
         // you might want to render your statusbar stuff here
     }
@@ -127,9 +129,10 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
     public boolean touchDragged(int screenX, int screenY, int pointer) {
 
         vector3.set(screenX,screenY,0);
-        camera.unproject(vector3);
-        sprite.setPosition(vector3.x-sprite.getWidth()/2,vector3.y-sprite.getHeight()/2);
-
+//        camera.unproject(vector3);
+//        sprite.setPosition(vector3.x-sprite.getWidth()/2,vector3.y-sprite.getHeight()/2);
+        position.x = screenX;
+        position.y = screenY;
         return false;
     }
 
