@@ -38,6 +38,8 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
         badLogic =new Texture("badlogic.jpg");
 
         Gdx.input.setInputProcessor(this);
+        Gdx.gl.glClearColor(0.3f,0.3f,0.3f,1);
+
     }
     Color baseColor = new Color(1.0f, 1.0f, 1.0f, 0.99607843f);
 
@@ -45,7 +47,8 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
     public void render() {
         // set the ambient color values, this is the "global" light of your scene
         // imagine it being the sun.  Usually the alpha value is just 1, and you change the darkness/brightness with the Red, Green and Blue values for best effect
-        Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
+//        Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
+
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         spriteBatch.setColor(baseColor);
@@ -55,7 +58,7 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
 
 
         lightBuffer.begin();
-        Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
+//        Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // setup the right blending
@@ -66,10 +69,13 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
             spriteBatch.begin();
 
                 // set the color of your light (red,green,blue,alpha values)
-                spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
+//                spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
+                spriteBatch.setColor(Color.CYAN);
 
                 // and render the sprite
-                spriteBatch.draw(lightSource, position.x, position.y);
+                spriteBatch.draw(lightSource, position.x, position.y, 512, 512);
+
+                spriteBatch.setColor(Color.WHITE);
             spriteBatch.end();
         lightBuffer.end();
 

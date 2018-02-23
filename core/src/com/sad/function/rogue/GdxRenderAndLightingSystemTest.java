@@ -66,11 +66,11 @@ public class GdxRenderAndLightingSystemTest extends ApplicationAdapter implement
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        int width  = AssetManager.getInstance().get("bigOlLight.png").getWidth();
-        int height = AssetManager.getInstance().get("bigOlLight.png").getHeight();
+        int width  = AssetManager.getInstance().get("bigOlLight3.png").getWidth();
+        int height = AssetManager.getInstance().get("bigOlLight3.png").getHeight();
 
         UUID newLight = em.createEntity();
-        em.addComponent(newLight, new Light(10, Color.WHITE, "bigOlLight.png"));
+        em.addComponent(newLight, new Light(10, Color.WHITE, "bigOlLight3.png"));
         em.addComponent(newLight, new TransformComponent(screenX - width / 2, screenY - height / 2));
 
         return false;
