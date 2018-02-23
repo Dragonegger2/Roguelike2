@@ -45,7 +45,7 @@ public class MapComponent extends Component {
             fovCalculator.Compute(dungeon,
                     em.getComponent(player, TransformComponent.class).x,
                     em.getComponent(player, TransformComponent.class).y,
-                    em.getComponent(player, LightSourceComponent.class).lightLevel
+                    (int)em.getComponent(player, Light.class).distance
             );
         }
 

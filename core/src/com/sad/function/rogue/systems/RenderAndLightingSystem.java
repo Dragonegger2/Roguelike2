@@ -15,6 +15,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.sad.function.rogue.components.Light;
+import com.sad.function.rogue.components.SpriteComponent;
+import com.sad.function.rogue.components.TransformComponent;
+
+import java.util.UUID;
 
 /**
  * Rendering system like that mentioned here:
@@ -27,9 +32,12 @@ public class RenderAndLightingSystem {
 
     private static RenderAndLightingSystem _instance;
     private static Color baseColor = new Color(1.0f, 1.0f, 1.0f, 0.99607843f);
+    private static Color shadeColor = new Color(0.3f,0.38f,0.4f,1);
 
     private RenderAndLightingSystem() {
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        Gdx.gl.glClearColor(shadeColor.r, shadeColor.g, shadeColor.b,  shadeColor.a); //Default clear color I'm using. Can be overridden by calling before this.
     }
 
     public static RenderAndLightingSystem getInstance() {
@@ -44,7 +52,7 @@ public class RenderAndLightingSystem {
 
         renderLights(spriteBatch, em);
 
-        renderUI(spriteBatch, em);
+//        renderUI(spriteBatch, em);
     }
 
     /**
@@ -68,21 +76,28 @@ public class RenderAndLightingSystem {
 
     /**
      * All components that will be impacted by lighting will be rendered here.
-     * @param spriteBatch
+     * @param batch
      * @param em
      */
-    private void renderLightedComponents(Batch spriteBatch, EntityManager em) {
+    private void renderLightedComponents(Batch batch, EntityManager em) {
         // set the ambient color values, this is the "global" light of your scene
         // imagine it being the sun.  Usually the alpha value is just 1, and you change the darkness/brightness with the Red, Green and Blue values for best effect
-        Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        spriteBatch.setColor(baseColor);
-        spriteBatch.begin();
+//        batch.setColor(baseColor);
+        batch.begin();
 //            spriteBatch.draw(badLogic, 0,0);
 //            Render all objects to the screen before applying lights.
-        spriteBatch.end();
+        for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] {SpriteComponent.class, TransformComponent.class})) {
 
+            batch.draw(em.getComponent(entity, SpriteComponent.class).sprite,
+                    em.getComponent(entity, TransformComponent.class).x,
+                    em.getComponent(entity, TransformComponent.class).y,
+                    em.getComponent(entity, SpriteComponent.class).sprite.getWidth(),
+                    em.getComponent(entity, SpriteComponent.class).sprite.getHeight());
+        }
+
+        batch.end();
     }
 
     /**
@@ -96,9 +111,7 @@ public class RenderAndLightingSystem {
      */
     private void renderLights(Batch spriteBatch, EntityManager em) {
         lightBuffer.begin();
-
             //If we don't clear we get all kinds of artifacts.
-            Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             // setup the right blending
@@ -106,20 +119,28 @@ public class RenderAndLightingSystem {
             Gdx.gl.glEnable(GL20.GL_BLEND);
 
             // start rendering the lights to our spriteBatch
+            Gdx.gl.glClearColor(0.3f, 0.38f, 0.4f, 1);
             spriteBatch.begin();
 
-            // set the color of your light (red,green,blue,alpha values)
-            spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
+            for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] {Light.class, TransformComponent.class})) {
+                // set the color of your light (red,green,blue,alpha values)
+//                 spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
 
-            // and render the sprite
-            //spriteBatch.draw(lightSource, -1, 0);
-            //TODO: Render lights sources. Will need a position and other stuff here.
+                spriteBatch.setColor(em.getComponent(entity, Light.class).color);
+
+                // and render the sprite
+                //spriteBatch.draw(lightSource, -1, 0);
+                spriteBatch.draw(em.getComponent(entity, Light.class).source,
+                        em.getComponent(entity, TransformComponent.class).x,
+                        em.getComponent(entity,TransformComponent.class).y);
+            }
+
+
             spriteBatch.end();
         lightBuffer.end();
 
         // now we render the lightBuffer to the default "frame buffer"
         // with the right blending !
-
         Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
         spriteBatch.begin();
             spriteBatch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());

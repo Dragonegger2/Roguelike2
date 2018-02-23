@@ -29,6 +29,14 @@ public class AssetManager {
         return manager.get(localPath, Texture.class);
     }
 
+    public Texture get(String localPath) {
+        if(!manager.isLoaded(localPath)) {
+            manager.load(localPath, Texture.class);
+            manager.finishLoadingAsset(localPath);
+        }
+        return manager.get(localPath, Texture.class);
+    }
+
     public void dispose() {
         manager.dispose();
     }
