@@ -83,9 +83,11 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
         // with the right blending !
 
         Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+
         spriteBatch.begin();
-        spriteBatch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+            spriteBatch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         spriteBatch.end();
+
         // post light-rendering
         // you might want to render your statusbar stuff here
     }
