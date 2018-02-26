@@ -30,7 +30,7 @@ public class LightingSystem {
     private static TextureRegion lightBufferRegion;
 
     private static LightingSystem _instance;
-    private static Color shadeColor = new Color(0.3f,0.3f,0.3f,1);
+    private static Color shadeColor = new Color(0.3f,0.3f,0.3f,.9f);
 
     private LightingSystem() {
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -56,22 +56,19 @@ public class LightingSystem {
             Gdx.gl.glEnable(GL20.GL_BLEND);
 
             batch.begin();
-
                 for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] {Light.class, TransformComponent.class})) {
                     // set the color of your light (red,green,blue,alpha values)
-                    // batch.setColor(0.9f, 0.4f, 0f, 1f);
 
                     batch.setColor(em.getComponent(entity, Light.class).color);
 
+//                    TODO: Current lighting bugs exist here:
                     // and renderLighting the sprite
-                    //batch.draw(lightSource, -1, 0);
                     batch.draw(em.getComponent(entity, Light.class).source,
                             em.getComponent(entity, TransformComponent.class).x,
                             em.getComponent(entity,TransformComponent.class).y);
 
-                    batch.setColor(Color.WHITE); //White is the default color.
+                    batch.setColor(Color.WHITE); //White is the default color. If you don't, we'll get bleeding issues.
                 }
-
 
             batch.end();
         lightBuffer.end();
@@ -91,16 +88,14 @@ public class LightingSystem {
      * @param lowDisplayH
      */
     public void resize(int lowDisplayW, int lowDisplayH) {
-        // Fakedlight system (alpha blending)
-
         // if lightBuffer was created before, dispose, we recreate a new one
         if (lightBuffer!=null) lightBuffer.dispose();
         lightBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, lowDisplayW, lowDisplayH, false);
 
         lightBuffer.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-        lightBufferRegion = new TextureRegion(lightBuffer.getColorBufferTexture(),0,lightBuffer.getHeight()-lowDisplayH,lowDisplayW,lowDisplayH);
-
+//        lightBufferRegion = new TextureRegion(lightBuffer.getColorBufferTexture(),0,lightBuffer.getHeight()-lowDisplayH,lowDisplayW,lowDisplayH);
+//        lightBufferRegion = new TextureRegion()
         lightBufferRegion.flip(false, false);
     }
 }

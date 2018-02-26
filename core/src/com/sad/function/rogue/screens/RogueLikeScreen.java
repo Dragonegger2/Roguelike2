@@ -2,48 +2,35 @@ package com.sad.function.rogue.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.sad.function.rogue.FollowEntityCamera;
+import com.sad.function.rogue.components.Light;
 import com.sad.function.rogue.components.MapComponent;
 import com.sad.function.rogue.components.TransformComponent;
-import com.sad.function.rogue.objects.Dungeon;
-import com.sad.function.rogue.objects.Tile;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
-import com.sad.function.rogue.systems.RenderingSystem;
+import com.sad.function.rogue.systems.LightingSystem;
+import com.sad.function.rogue.systems.RenderSystem;
 import com.sad.function.rogue.systems.input.Action;
 import com.sad.function.rogue.systems.input.GameContext;
 import com.sad.function.rogue.systems.input.KeyBoardGameInput;
-import com.sad.function.rogue.visibility.RayCastVisibility;
 
 import java.util.UUID;
 
 public class RogueLikeScreen implements BaseScreen{
-    private static final float BOX_TO_WORLD = 16;
-    private static final float WORLD_TO_BOX = 1/16;
 
     //Entity Manager Stuff.
     private EntityManager entityManager;
 
-    private RayCastVisibility rayCastVisibility = new RayCastVisibility();
 
     private FollowEntityCamera camera;
-//    private PerspectiveCamera uiCamera;
 
     private GameContext contextList = new GameContext();
 
     UUID playerUUID;
     UUID mapUUID;
-
-    FrameBuffer lightBuffer;
-    TextureRegion lightBufferRegion;
-    Texture lightSpot;
 
     public RogueLikeScreen() {
         setupActions();
@@ -61,16 +48,11 @@ public class RogueLikeScreen implements BaseScreen{
         camera = new FollowEntityCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), playerUUID, entityManager);
         camera.zoom /= 4;
 
-        if (lightBuffer!=null) lightBuffer.dispose();
-        lightBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 600, 600, false);
+        entityManager.addComponent(playerUUID, new Light(10, Color.WHITE, "160_Soft_light.png"));
 
-        lightBuffer.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
-        lightBufferRegion = new TextureRegion(lightBuffer.getColorBufferTexture(),0,0,600,600);
-
-        lightBufferRegion.flip(false, false);
-
-        lightSpot = new Texture("bigOlLight.png");
+        UUID lights = entityManager.createEntity();
+        entityManager.addComponent(lights, new TransformComponent(0,0));
+        entityManager.addComponent(lights, new Light(100, Color.WHITE, "bigOlLight.png"));
     }
 
     public void processInput() {
@@ -88,43 +70,13 @@ public class RogueLikeScreen implements BaseScreen{
     }
 
     public void render(Batch batch) {
-        //Update the project matrix and then set the batch project matrix.
-        camera.update();
-        batch.setProjectionMatrix(camera.combined);
+        camera.update();                            //Update the project matrix and then set the batch project matrix.
+        batch.setProjectionMatrix(camera.combined); //Set the project matrix.
 
-        //Clear buffer before rendering.
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //Render all game entities.
+        RenderSystem.getInstance().render(batch, entityManager);
 
-        batch.begin();
-            Dungeon dungeon = entityManager.getComponent(mapUUID, MapComponent.class).dungeon;
-            Tile[][] map = entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map;
-
-            for(int x = 0; x < map.length; x++) {
-                for(int y = 0; y < map[x].length; y++) {
-                    //TODO Visibility. (Again)
-                    rayCastVisibility.Compute(entityManager.getComponent(mapUUID, MapComponent.class).dungeon,
-                            entityManager.getComponent(playerUUID, TransformComponent.class).x,
-                            entityManager.getComponent(playerUUID, TransformComponent.class).y,
-                            10);
-
-                    boolean visible = rayCastVisibility.isVisible(x,y);
-                    boolean wall = map[x][y].blockSight;
-
-                    if(wall) {
-                        batch.draw(dungeon.wallLit, x * 16, y * 16);
-                    }
-                    else {
-                        batch.draw(dungeon.floorLit, x * 16, y * 16);
-                    }
-                    map[x][y].explored = true;
-                }
-            }
-
-            //Render all game entities.
-            RenderingSystem.run(batch, entityManager);
-
-        batch.end();
+        LightingSystem.getInstance().renderLighting(batch, entityManager);
     }
 
     /**

@@ -31,6 +31,7 @@ public class MapComponent extends Component {
 
         dg.makeMap();
     }
+    
     /**
      * Recomputes the visibility grid if fovRecompute has been set.
      *

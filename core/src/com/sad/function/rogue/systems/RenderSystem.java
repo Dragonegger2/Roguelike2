@@ -13,8 +13,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.sad.function.rogue.components.MapComponent;
 import com.sad.function.rogue.components.SpriteComponent;
 import com.sad.function.rogue.components.TransformComponent;
+import com.sad.function.rogue.objects.Dungeon;
+import com.sad.function.rogue.objects.Tile;
 
 import java.util.UUID;
 
@@ -45,19 +48,40 @@ public class RenderSystem {
     public void render(Batch batch, EntityManager em) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         batch.begin();
+
+        Dungeon dungeon = em.getComponent(em.getAllEntitiesPossessingComponent(MapComponent.class).iterator().next(), MapComponent.class).dungeon;
+        Tile[][] map = em.getComponent(em.getAllEntitiesPossessingComponent(MapComponent.class).iterator().next(), MapComponent.class).dungeon.map;
+
+        for(int x = 0; x < map.length; x++) {
+            for(int y = 0; y < map[x].length; y++) {
+
+                boolean wall = map[x][y].blockSight;
+
+                if(wall) {
+                    batch.draw(dungeon.wallLit, x * 16, y * 16);
+                }
+                else {
+                    batch.draw(dungeon.floorLit, x * 16, y * 16);
+                }
+                map[x][y].explored = true;
+            }
+        }
 
         //            Render all objects to the screen before applying lights.
         for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] {SpriteComponent.class, TransformComponent.class})) {
 
             batch.draw(em.getComponent(entity, SpriteComponent.class).sprite,
-                    em.getComponent(entity, TransformComponent.class).x,
-                    em.getComponent(entity, TransformComponent.class).y,
+                    em.getComponent(entity, TransformComponent.class).x * 16,
+                    em.getComponent(entity, TransformComponent.class).y * 16,
                     em.getComponent(entity, SpriteComponent.class).sprite.getWidth(),
                     em.getComponent(entity, SpriteComponent.class).sprite.getHeight());
         }
 
         batch.end();
+
     }
 
 }

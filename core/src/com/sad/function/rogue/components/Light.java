@@ -12,6 +12,7 @@ public class Light extends Component {
      *
      * @param distance how far the light will reach.
      * @param color, Color of the light source. They should all be created as white circles on a transparent background.
+     * @param textureLocationName, uses the AssetManager to load the requested asset into memory. TODO: Make this better.
      */
     public Light(float distance, Color color, String textureLocationName) {
         this.distance = distance;

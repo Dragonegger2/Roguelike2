@@ -2,14 +2,21 @@ package com.sad.function.rogue;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class GdxTest extends ApplicationAdapter implements InputProcessor {
 
@@ -17,79 +24,62 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
     TextureRegion lightBufferRegion;
 
     SpriteBatch spriteBatch;
-    OrthographicCamera camera;
 
     Vector3 vector3;
 
     Texture lightSource, badLogic;
     Sprite sprite;
     Vector2 position;
+    Skin skin;
 
+    Stage stage;
+    InputMultiplexer input = new InputMultiplexer();
     @Override
     public void create() {
         position = new Vector2(0,0);
         vector3=new Vector3();
-        camera=new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         spriteBatch=new SpriteBatch();
 
         lightSource =new Texture("bigOlLight.png");
 
         badLogic =new Texture("badlogic.jpg");
 
-        Gdx.input.setInputProcessor(this);
+//        Gdx.input.setInputProcessor(this);
         Gdx.gl.glClearColor(0.3f,0.3f,0.3f,1);
 
+        skin = new Skin(Gdx.files.internal("./data/default/skin/uiskin.json"));
+        stage = new Stage();
+
+        final TextButton button = new TextButton("Click me", skin, "default");
+
+        button.setWidth(200f);
+        button.setHeight(20f);
+        button.setPosition(Gdx.graphics.getWidth() /2 - 100f, Gdx.graphics.getHeight()/2 - 10f);
+
+        button.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                button.setText("You clicked the button");
+            }
+        });
+
+        stage.addActor(button);
+
+//        Gdx.input.setInputProcessor(stage);
+        input.addProcessor(0, this);
+        input.addProcessor(1, stage);
+
+        Gdx.input.setInputProcessor(input);
     }
-    Color baseColor = new Color(1.0f, 1.0f, 1.0f, 0.99607843f);
 
     @Override
     public void render() {
-        // set the ambient color values, this is the "global" light of your scene
-        // imagine it being the sun.  Usually the alpha value is just 1, and you change the darkness/brightness with the Red, Green and Blue values for best effect
-//        Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
-
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        spriteBatch.setColor(baseColor);
-        spriteBatch.begin();
-            spriteBatch.draw(badLogic, 0,0);
-        spriteBatch.end();
-
-
-        lightBuffer.begin();
-//        Gdx.gl.glClearColor(0.3f,0.38f,0.4f,1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // setup the right blending
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-
-            // start rendering the lights to our spriteBatch
-            spriteBatch.begin();
-
-                // set the color of your light (red,green,blue,alpha values)
-//                spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
-                spriteBatch.setColor(Color.CYAN);
-
-                // and renderLighting the sprite
-                spriteBatch.draw(lightSource, position.x, position.y, 512, 512);
-
-                spriteBatch.setColor(Color.WHITE);
-            spriteBatch.end();
-        lightBuffer.end();
-
-        // now we renderLighting the lightBuffer to the default "frame buffer"
-        // with the right blending !
-
-        Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
-
-        spriteBatch.begin();
-            spriteBatch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        spriteBatch.end();
 
         // post light-rendering
         // you might want to renderLighting your statusbar stuff here
+        spriteBatch.begin();
+        stage.draw();
+        spriteBatch.end();
     }
 
     @Override
@@ -136,11 +126,6 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
 
-        vector3.set(screenX,screenY,0);
-//        camera.unproject(vector3);
-//        sprite.setPosition(vector3.x-sprite.getWidth()/2,vector3.y-sprite.getHeight()/2);
-        position.x = screenX;
-        position.y = screenY;
         return false;
     }
 
