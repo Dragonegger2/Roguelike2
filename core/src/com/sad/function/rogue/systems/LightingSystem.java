@@ -32,8 +32,6 @@ public class LightingSystem {
     private static LightingSystem _instance;
     private static Color shadeColor = new Color(0.3f,0.3f,0.3f,1);
 
-//    private static Color shadeColor = new Color(0.3f,0.38f,0.4f,1);
-
     private LightingSystem() {
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -47,43 +45,43 @@ public class LightingSystem {
         return _instance;
     }
 
-    public void renderLighting(Batch spriteBatch, EntityManager em) {
+    public void renderLighting(Batch batch, EntityManager em) {
 
         lightBuffer.begin();
 
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // setup the right blending
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
+            // setup the right blending
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+            Gdx.gl.glEnable(GL20.GL_BLEND);
 
-        spriteBatch.begin();
+            batch.begin();
 
-        for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] {Light.class, TransformComponent.class})) {
-            // set the color of your light (red,green,blue,alpha values)
-            // spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
+                for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] {Light.class, TransformComponent.class})) {
+                    // set the color of your light (red,green,blue,alpha values)
+                    // batch.setColor(0.9f, 0.4f, 0f, 1f);
 
-            spriteBatch.setColor(em.getComponent(entity, Light.class).color);
+                    batch.setColor(em.getComponent(entity, Light.class).color);
 
-            // and renderLighting the sprite
-            //spriteBatch.draw(lightSource, -1, 0);
-            spriteBatch.draw(em.getComponent(entity, Light.class).source,
-                    em.getComponent(entity, TransformComponent.class).x,
-                    em.getComponent(entity,TransformComponent.class).y);
+                    // and renderLighting the sprite
+                    //batch.draw(lightSource, -1, 0);
+                    batch.draw(em.getComponent(entity, Light.class).source,
+                            em.getComponent(entity, TransformComponent.class).x,
+                            em.getComponent(entity,TransformComponent.class).y);
 
-            spriteBatch.setColor(Color.WHITE); //White is the default color.
-        }
+                    batch.setColor(Color.WHITE); //White is the default color.
+                }
 
 
-        spriteBatch.end();
+            batch.end();
         lightBuffer.end();
 
 
         Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
 
-        spriteBatch.begin();
-        spriteBatch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        spriteBatch.end();
+        batch.begin();
+        batch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        batch.end();
 
     }
 
