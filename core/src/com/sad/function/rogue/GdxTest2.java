@@ -46,7 +46,7 @@ public class GdxTest2 extends ApplicationAdapter implements InputProcessor {
 
         badLogic =new Texture("badlogic.jpg");
 
-        Gdx.gl.glClearColor(0.3f,0.3f,0.3f,1);
+        Gdx.gl.glClearColor(0.3f,0.33f,0.3f,1);
 
         Skin skin = new Skin(Gdx.files.internal("./data/default/skin/uiskin.json"));
 
@@ -75,7 +75,6 @@ public class GdxTest2 extends ApplicationAdapter implements InputProcessor {
         lboDestBox2.setItems("GL_ZERO", "GL_ONE", "GL_SRC_COLOR", "GL_ONE_MINUS_SRC_COLOR", "GL_SRC_ALPHA", "GL_ONE_MINUS_SRC_ALPHA", "GL_DST_COLOR");
         lboDestBox2.setWidth(200);
         lboDestBox2.setPosition(200, 480 - lboDestBox.getHeight() * 2);
-//        lboDestBox2.setSelected("GL_ZERO");
         lboDestBox2.setSelected("GL_SRC_COLOR");
 
         stage.addActor(lboDestBox);
@@ -123,9 +122,6 @@ public class GdxTest2 extends ApplicationAdapter implements InputProcessor {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-//        Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE);
-//Badlogic render
-//        spriteBatch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE);
         spriteBatch.enableBlending();
 
         spriteBatch.setProjectionMatrix(camera.combined);
@@ -143,22 +139,19 @@ public class GdxTest2 extends ApplicationAdapter implements InputProcessor {
             spriteBatch.begin();
 
                 // set the color of your light (red,green,blue,alpha values)
-//                spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
-
                 spriteBatch.setColor(Color.WHITE);
 
                 // and renderLighting the sprite
                 spriteBatch.draw(lightSource, position.x, position.y, 512, 512);
 
                 spriteBatch.setColor(Color.WHITE);
+
             spriteBatch.end();
         lightBuffer.end();
 
         // now we renderLighting the lightBuffer to the default "frame buffer"
         // with the right blending !
 
-//        Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
-//        Gdx.gl.glBlendFunc(returnGL20RenderType(lboSourceBox2.getSelected()), returnGL20RenderType(lboDestBox2.getSelected()));
         spriteBatch.setBlendFunction(returnGL20RenderType(lboSourceBox2.getSelected()), returnGL20RenderType(lboDestBox2.getSelected()));
         spriteBatch.begin();
             spriteBatch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
@@ -178,7 +171,6 @@ public class GdxTest2 extends ApplicationAdapter implements InputProcessor {
         lightBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, lowDisplayW, lowDisplayH, false);
 
         lightBuffer.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
     }
 
     @Override

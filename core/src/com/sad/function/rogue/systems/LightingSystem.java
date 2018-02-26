@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.sad.function.rogue.components.Light;
 import com.sad.function.rogue.components.TransformComponent;
@@ -27,7 +26,6 @@ import java.util.UUID;
 public class LightingSystem {
 
     private static FrameBuffer lightBuffer;
-    private static TextureRegion lightBufferRegion;
 
     private static LightingSystem _instance;
     private static Color shadeColor = new Color(0.3f,0.3f,0.3f,.9f);
@@ -50,11 +48,9 @@ public class LightingSystem {
         lightBuffer.begin();
 
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
             // setup the right blending
-            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-            Gdx.gl.glEnable(GL20.GL_BLEND);
 
+            batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
             batch.begin();
                 for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] {Light.class, TransformComponent.class})) {
                     // set the color of your light (red,green,blue,alpha values)
@@ -74,28 +70,24 @@ public class LightingSystem {
         lightBuffer.end();
 
 
-        Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
+        batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
 
         batch.begin();
-        batch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+            batch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         batch.end();
 
     }
 
     /**
      * This resizes the frame buffer to reflect the current size of the screen.
-     * @param lowDisplayW
-     * @param lowDisplayH
+     * @param width
+     * @param height
      */
-    public void resize(int lowDisplayW, int lowDisplayH) {
+    public void resize(int width, int height) {
         // if lightBuffer was created before, dispose, we recreate a new one
         if (lightBuffer!=null) lightBuffer.dispose();
-        lightBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, lowDisplayW, lowDisplayH, false);
+        lightBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
 
         lightBuffer.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
-//        lightBufferRegion = new TextureRegion(lightBuffer.getColorBufferTexture(),0,lightBuffer.getHeight()-lowDisplayH,lowDisplayW,lowDisplayH);
-//        lightBufferRegion = new TextureRegion()
-        lightBufferRegion.flip(false, false);
     }
 }
