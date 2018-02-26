@@ -29,8 +29,8 @@ public class RogueLikeScreen implements BaseScreen{
 
     private GameContext contextList = new GameContext();
 
-    UUID playerUUID;
-    UUID mapUUID;
+    private UUID playerUUID;
+    private UUID mapUUID;
 
     public RogueLikeScreen() {
         setupActions();
@@ -48,15 +48,14 @@ public class RogueLikeScreen implements BaseScreen{
         camera = new FollowEntityCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), playerUUID, entityManager);
         camera.zoom /= 4;
 
-        entityManager.addComponent(playerUUID, new Light(10, Color.WHITE, "160_Soft_light.png"));
+        entityManager.addComponent(playerUUID, new Light(10, Color.WHITE, "light3.png"));
 
         UUID lights = entityManager.createEntity();
         entityManager.addComponent(lights, new TransformComponent(0,0));
-        entityManager.addComponent(lights, new Light(100, Color.WHITE, "bigOlLight.png"));
+        entityManager.addComponent(lights, new Light(100, Color.WHITE, "light3.png"));
     }
 
     public void processInput() {
-
         //Camera controls.
         if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
             camera.zoom = camera.zoom / 2;
@@ -67,6 +66,7 @@ public class RogueLikeScreen implements BaseScreen{
     }
 
     public void update(float delta) {
+
     }
 
     public void render(Batch batch) {
@@ -76,7 +76,7 @@ public class RogueLikeScreen implements BaseScreen{
         //Render all game entities.
         RenderSystem.getInstance().render(batch, entityManager);
 
-        LightingSystem.getInstance().renderLighting(batch, entityManager);
+        LightingSystem.getInstance().renderLighting(batch, entityManager, camera);
     }
 
     /**

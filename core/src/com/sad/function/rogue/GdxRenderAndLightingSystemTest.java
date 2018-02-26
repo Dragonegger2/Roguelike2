@@ -11,7 +11,6 @@ import com.sad.function.rogue.components.SpriteComponent;
 import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
-import com.sad.function.rogue.systems.LightingSystem;
 import com.sad.function.rogue.systems.RenderSystem;
 
 import java.util.UUID;
@@ -42,12 +41,12 @@ public class GdxRenderAndLightingSystemTest extends ApplicationAdapter implement
     @Override
     public void render() {
         RenderSystem.getInstance().render(batch, em);
-        LightingSystem.getInstance().renderLighting(batch, em);
+//        LightingSystem.getInstance().renderLighting(batch, em,);
     }
 
     @Override
     public void resize(int lowDisplayW, int lowDisplayH) {
-        LightingSystem.getInstance().resize(lowDisplayW, lowDisplayH);
+//        LightingSystem.getInstance().resize(lowDisplayW, lowDisplayH);
     }
 
     @Override

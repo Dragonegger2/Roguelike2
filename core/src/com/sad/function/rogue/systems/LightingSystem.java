@@ -8,10 +8,7 @@ package com.sad.function.rogue.systems;
  */
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.sad.function.rogue.components.Light;
@@ -31,8 +28,10 @@ public class LightingSystem {
     private static Color shadeColor = new Color(0.3f,0.3f,0.3f,.9f);
 
     private LightingSystem() {
-        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        if (lightBuffer!=null) lightBuffer.dispose();
+        lightBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 80 * 16, 80 * 16, false);
 
+        lightBuffer.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         Gdx.gl.glClearColor(shadeColor.r, shadeColor.g, shadeColor.b,  shadeColor.a); //Default clear color I'm using. Can be overridden by calling before this.
     }
 
@@ -43,7 +42,8 @@ public class LightingSystem {
         return _instance;
     }
 
-    public void renderLighting(Batch batch, EntityManager em) {
+    public void renderLighting(Batch batch, EntityManager em, Camera camera) {
+        batch.setProjectionMatrix(camera.combined);
 
         lightBuffer.begin();
 
@@ -60,9 +60,11 @@ public class LightingSystem {
 //                    TODO: Current lighting bugs exist here:
                     // and renderLighting the sprite
                     batch.draw(em.getComponent(entity, Light.class).source,
-                            em.getComponent(entity, TransformComponent.class).x,
-                            em.getComponent(entity,TransformComponent.class).y);
-
+//                            em.getComponent(entity, TransformComponent.class).x * 16 - em.getComponent(entity, Light.class).source.getWidth() / 2,
+//                            em.getComponent(entity,TransformComponent.class).y * 16 - em.getComponent(entity, Light.class).source.getHeight() / 2);
+                    0,
+                    0);
+                    System.out.println("Position: (" + em.getComponent(entity, TransformComponent.class).x + ", " + em.getComponent(entity, TransformComponent.class).y + ")");
                     batch.setColor(Color.WHITE); //White is the default color. If you don't, we'll get bleeding issues.
                 }
 
@@ -72,22 +74,10 @@ public class LightingSystem {
 
         batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
 
+        batch.setProjectionMatrix(camera.combined);
         batch.begin();
             batch.draw(lightBuffer.getColorBufferTexture(), 0, 0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         batch.end();
 
-    }
-
-    /**
-     * This resizes the frame buffer to reflect the current size of the screen.
-     * @param width
-     * @param height
-     */
-    public void resize(int width, int height) {
-        // if lightBuffer was created before, dispose, we recreate a new one
-        if (lightBuffer!=null) lightBuffer.dispose();
-        lightBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
-
-        lightBuffer.getColorBufferTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     }
 }
