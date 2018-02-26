@@ -71,7 +71,7 @@ public class LightingSystem {
                     em.getComponent(entity, TransformComponent.class).x,
                     em.getComponent(entity,TransformComponent.class).y);
 
-            spriteBatch.setColor(Color.WHITE);
+            spriteBatch.setColor(Color.WHITE); //White is the default color.
         }
 
 
