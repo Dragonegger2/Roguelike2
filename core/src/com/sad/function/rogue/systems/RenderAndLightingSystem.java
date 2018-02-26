@@ -124,7 +124,7 @@ public class RenderAndLightingSystem {
 
                 spriteBatch.setColor(em.getComponent(entity, Light.class).color);
 
-                // and render the sprite
+                // and renderLighting the sprite
                 //spriteBatch.draw(lightSource, -1, 0);
                 spriteBatch.draw(em.getComponent(entity, Light.class).source,
                         em.getComponent(entity, TransformComponent.class).x,
@@ -148,7 +148,7 @@ public class RenderAndLightingSystem {
 
     private void renderUI(Batch spriteBatch, EntityManager em) {
         // post light-rendering
-        // you might want to render your statusbar stuff here
-        //TODO: Can render UI here.
+        // you might want to renderLighting your statusbar stuff here
+        //TODO: Can renderLighting UI here.
     }
 }

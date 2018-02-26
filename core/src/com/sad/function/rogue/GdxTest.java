@@ -72,14 +72,14 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
 //                spriteBatch.setColor(0.9f, 0.4f, 0f, 1f);
                 spriteBatch.setColor(Color.CYAN);
 
-                // and render the sprite
+                // and renderLighting the sprite
                 spriteBatch.draw(lightSource, position.x, position.y, 512, 512);
 
                 spriteBatch.setColor(Color.WHITE);
             spriteBatch.end();
         lightBuffer.end();
 
-        // now we render the lightBuffer to the default "frame buffer"
+        // now we renderLighting the lightBuffer to the default "frame buffer"
         // with the right blending !
 
         Gdx.gl.glBlendFunc(GL20.GL_DST_COLOR, GL20.GL_ZERO);
@@ -89,7 +89,7 @@ public class GdxTest extends ApplicationAdapter implements InputProcessor {
         spriteBatch.end();
 
         // post light-rendering
-        // you might want to render your statusbar stuff here
+        // you might want to renderLighting your statusbar stuff here
     }
 
     @Override
