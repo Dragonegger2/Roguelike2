@@ -1,9 +1,11 @@
 package com.sad.function.rogue.screens;
 
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.rogue.FollowEntityCamera;
 import com.sad.function.rogue.components.Light;
 import com.sad.function.rogue.components.MapComponent;
@@ -19,7 +21,7 @@ import com.sad.function.rogue.systems.input.KeyBoardGameInput;
 
 import java.util.UUID;
 
-public class RogueLikeScreen implements BaseScreen{
+public class RogueLikeScreen implements ApplicationListener {
 
     //Entity Manager Stuff.
     private EntityManager entityManager;
@@ -32,28 +34,7 @@ public class RogueLikeScreen implements BaseScreen{
     private UUID playerUUID;
     private UUID mapUUID;
 
-    public RogueLikeScreen() {
-        setupActions();
-
-        entityManager = new EntityManager();
-        mapUUID = entityManager.createEntity();
-
-        //Create the player.
-        playerUUID = PlayerBuilder.createPlayer(entityManager);
-
-        //Create map object and then generate the dungeon.
-        entityManager.addComponent(mapUUID, new MapComponent(entityManager));
-        entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
-
-        camera = new FollowEntityCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), playerUUID, entityManager);
-        camera.zoom /= 4;
-
-        entityManager.addComponent(playerUUID, new Light(10, Color.WHITE, "light3.png"));
-
-        UUID lights = entityManager.createEntity();
-        entityManager.addComponent(lights, new TransformComponent(0,0));
-        entityManager.addComponent(lights, new Light(100, Color.WHITE, "light3.png"));
-    }
+    private Batch batch;
 
     public void processInput() {
         //Camera controls.
@@ -63,20 +44,6 @@ public class RogueLikeScreen implements BaseScreen{
         if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
             camera.zoom *= 2;
         }
-    }
-
-    public void update(float delta) {
-
-    }
-
-    public void render(Batch batch) {
-        camera.update();                            //Update the project matrix and then set the batch project matrix.
-        batch.setProjectionMatrix(camera.combined); //Set the project matrix.
-
-        //Render all game entities.
-        RenderSystem.getInstance().render(batch, entityManager);
-
-        LightingSystem.getInstance().renderLighting(batch, entityManager, camera);
     }
 
     /**
@@ -112,6 +79,63 @@ public class RogueLikeScreen implements BaseScreen{
                 new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.S)
             )
         );
+    }
+
+    @Override
+    public void create() {
+        setupActions();
+
+        entityManager = new EntityManager();
+        mapUUID = entityManager.createEntity();
+
+        //Create the player.
+        playerUUID = PlayerBuilder.createPlayer(entityManager);
+
+        //Create map object and then generate the dungeon.
+        entityManager.addComponent(mapUUID, new MapComponent(entityManager));
+        entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
+
+        camera = new FollowEntityCamera(80 * 4, 50 * 4, playerUUID, entityManager);
+
+        entityManager.addComponent(playerUUID, new Light(10, Color.WHITE, "light3.png"));
+
+        UUID lights = entityManager.createEntity();
+        entityManager.addComponent(lights, new TransformComponent(0,0));
+        entityManager.addComponent(lights, new Light(100, Color.WHITE, "light3.png"));
+
+        batch = new SpriteBatch();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        LightingSystem.getInstance().resize(width, height);
+    }
+
+    @Override
+    public void render() {
+        //process input
+        processInput();
+
+        //updateGame
+
+        //render
+
+        camera.update();
+        batch.setProjectionMatrix(camera.combined); 
+
+        //Render all game entities.
+        RenderSystem.getInstance().render(batch, entityManager);
+
+        LightingSystem.getInstance().renderLighting(batch, entityManager, camera);
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+
     }
 
     @Override
