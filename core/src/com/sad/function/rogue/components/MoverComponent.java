@@ -18,22 +18,10 @@ public class MoverComponent extends Component {
 
     public void moveOrAttack(int dx, int dy, Tile[][] map) {
         //If you aren't blocked by a blocking thing.
-        try {
-            Body boxBody = manager.getComponent(target, PhysicsComponent.class).body;
+            if (!map[manager.getComponent(target, TransformComponent.class).x + dx][manager.getComponent(target, TransformComponent.class).y + dy].blocked) {
+                manager.getComponent(target, TransformComponent.class).x += dx;
+                manager.getComponent(target, TransformComponent.class).y += dy;
 
-//            if (!map[manager.getComponent(target, TransformComponent.class).x + dx][manager.getComponent(target, TransformComponent.class).y + dy].blocked) {
-//                manager.getComponent(target, TransformComponent.class).x += dx;
-//                manager.getComponent(target, TransformComponent.class).y += dy;
-//
-                //The Transform class is still being used to check for collisions. If I correctly modify values to world/box coordinates I shouldn't have to.
-//            boxBody.setTransform(1, 1, 0f);
-//            }
-
-            boxBody.applyForceToCenter(dx/60, dx/60, true);
-        }
-        catch(Exception e) {
-            System.out.println("Matching component was not found");
-        }
-
+            }
     }
 }

@@ -51,7 +51,7 @@ public class LightingSystem {
 
         if(frameBuffer==null){
             try {
-                frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int) Math.pow(width, 2), (int) Math.pow(height, 2), false);
+                frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
             }catch (GdxRuntimeException e){
                 frameBuffer=new FrameBuffer(Pixmap.Format.RGB565,(int) Math.pow(width, 2), (int) Math.pow(height, 2),false);
             }
@@ -100,8 +100,8 @@ public class LightingSystem {
         batch.begin();
 
             batch.draw(frameBuffer.getColorBufferTexture(),
-                    camera.position.x,
-                    camera.position.y
+                    camera.position.x - frameBuffer.getColorBufferTexture().getWidth()/2,
+                    camera.position.y - frameBuffer.getColorBufferTexture().getHeight()/2
             );
 
         batch.end();

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.rogue.FollowEntityCamera;
 import com.sad.function.rogue.components.Light;
 import com.sad.function.rogue.components.MapComponent;
+import com.sad.function.rogue.components.MoverComponent;
 import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.AssetManager;
@@ -18,6 +19,7 @@ import com.sad.function.rogue.systems.RenderSystem;
 import com.sad.function.rogue.systems.input.Action;
 import com.sad.function.rogue.systems.input.GameContext;
 import com.sad.function.rogue.systems.input.KeyBoardGameInput;
+import org.omg.CORBA.portable.Delegate;
 
 import java.util.UUID;
 
@@ -37,6 +39,9 @@ public class RogueLikeScreen implements ApplicationListener {
     private Batch batch;
 
     public void processInput() {
+        if(contextList.value("LEFT") > 0) {
+            entityManager.getComponent(playerUUID, MoverComponent.class).moveOrAttack(-1, 0, entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
+        }
         //Camera controls.
         if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
             camera.zoom = camera.zoom / 2;
@@ -54,29 +59,29 @@ public class RogueLikeScreen implements ApplicationListener {
 
         contextList.registerActionToContext("LEFT",
             new Action(
-              new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.LEFT),
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.A)
+              new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.LEFT),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.A)
             )
         );
 
         contextList.registerActionToContext("RIGHT",
             new Action(
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.RIGHT),
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.D)
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.RIGHT),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.D)
             )
         );
 
         contextList.registerActionToContext("UP",
             new Action(
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.UP),
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.W)
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.UP),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.W)
             )
         );
 
         contextList.registerActionToContext("DOWN",
             new Action(
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.DOWN),
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.S)
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.DOWN),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.S)
             )
         );
     }
@@ -97,11 +102,11 @@ public class RogueLikeScreen implements ApplicationListener {
 
         camera = new FollowEntityCamera(80 * 4, 50 * 4, playerUUID, entityManager);
 
-        entityManager.addComponent(playerUUID, new Light(10, Color.RED, "light3.png"));
+        entityManager.addComponent(playerUUID, new Light(10, Color.WHITE, "light3.png"));
 
         UUID lights = entityManager.createEntity();
         entityManager.addComponent(lights, new TransformComponent(0,0));
-        entityManager.addComponent(lights, new Light(100, Color.WHITE, "light3.png"));
+        entityManager.addComponent(lights, new Light(100, Color.RED, "light3.png"));
 
         batch = new SpriteBatch();
     }
