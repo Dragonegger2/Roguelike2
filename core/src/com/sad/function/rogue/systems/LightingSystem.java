@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.sad.function.rogue.Globals;
 import com.sad.function.rogue.components.Light;
 import com.sad.function.rogue.components.TransformComponent;
 
@@ -31,11 +32,17 @@ public class LightingSystem {
     private static LightingSystem _instance;
     private static Color shadeColor = new Color(0.3f,0.3f,0.3f,.9f);
 
+
     private LightingSystem(int width, int height) {
         resize(width, height);
-        Gdx.gl.glClearColor(shadeColor.r, shadeColor.g, shadeColor.b,  shadeColor.a); //Default clear color I'm using. Can be overridden by calling before this.
     }
 
+    /**
+     * Call in the ApplicationListener resize method to ensure that we properly resize the "fog of war"
+     *
+     * @param width
+     * @param height
+     */
     public void resize(int width, int height) {
         if(frameBuffer !=null && (frameBuffer.getWidth()!=width || frameBuffer.getHeight()!=height )) {
             frameBuffer.dispose();
@@ -44,9 +51,9 @@ public class LightingSystem {
 
         if(frameBuffer==null){
             try {
-                frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+                frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, (int) Math.pow(width, 2), (int) Math.pow(height, 2), false);
             }catch (GdxRuntimeException e){
-                frameBuffer=new FrameBuffer(Pixmap.Format.RGB565,width,height,false);
+                frameBuffer=new FrameBuffer(Pixmap.Format.RGB565,(int) Math.pow(width, 2), (int) Math.pow(height, 2),false);
             }
         }
 
@@ -54,16 +61,15 @@ public class LightingSystem {
 
     public static LightingSystem getInstance() {
         if(_instance == null) {
-            _instance = new LightingSystem(80 * 4, 50 * 4);
+            _instance = new LightingSystem(Globals.screenWidth, Globals.screenHeight);
         }
         return _instance;
     }
 
     public void renderLighting(Batch batch, EntityManager em, Camera camera) {
-//        batch.setProjectionMatrix(camera.combined);
 
         frameBuffer.begin();
-
+            Gdx.gl.glClearColor(shadeColor.r, shadeColor.g, shadeColor.b, shadeColor.a);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
             // setup the right blending
 
@@ -74,14 +80,10 @@ public class LightingSystem {
 
                     batch.setColor(em.getComponent(entity, Light.class).color);
 
-//                    TODO: Current lighting bugs exist here:
-                    // and renderLighting the sprite
+                    //TODO: Current lighting bugs exist here:
                     batch.draw(em.getComponent(entity, Light.class).source,
-//                            em.getComponent(entity, TransformComponent.class).x * 16 - em.getComponent(entity, Light.class).source.getWidth() / 2,
-//                            em.getComponent(entity,TransformComponent.class).y * 16 - em.getComponent(entity, Light.class).source.getHeight() / 2);
-                    0,
-                    0);
-                    System.out.println("Position: (" + em.getComponent(entity, TransformComponent.class).x + ", " + em.getComponent(entity, TransformComponent.class).y + ")");
+                            em.getComponent(entity, TransformComponent.class).x * 16 - em.getComponent(entity, Light.class).source.getWidth() / 2,
+                            em.getComponent(entity,TransformComponent.class).y * 16 - em.getComponent(entity, Light.class).source.getHeight() / 2);
                     batch.setColor(Color.WHITE); //White is the default color. If you don't, we'll get bleeding issues.
                 }
 
@@ -91,21 +93,17 @@ public class LightingSystem {
 
         batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
 
-//        batch.setProjectionMatrix(camera.combined);
+        /**
+         * The important thing to remember here about the frameBuffer is that the lights are drawn at their respective
+         * camera coordinates and are visible with the fb between them and the sprites below.
+         */
         batch.begin();
 
             batch.draw(frameBuffer.getColorBufferTexture(),
-                    camera.position.x + frameBuffer.getColorBufferTexture().getWidth() / 2,
-                    camera.position.y + frameBuffer.getColorBufferTexture().getHeight() / 2);
+                    camera.position.x,
+                    camera.position.y
+            );
+
         batch.end();
-/*
-        batch.begin();
-            for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] { Light.class, TransformComponent.class })) {
-                batch.draw(em.getComponent(entity, Light.class).source,
-                        em.getComponent(entity, TransformComponent.class).x * 16 - em.getComponent(entity, Light.class).source.getWidth() / 2,
-                        em.getComponent(entity,TransformComponent.class).y * 16 - em.getComponent(entity, Light.class).source.getHeight() / 2);
-            }
-        batch.end();
-*/
     }
 }
