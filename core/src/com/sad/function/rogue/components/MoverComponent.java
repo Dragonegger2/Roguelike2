@@ -1,5 +1,6 @@
 package com.sad.function.rogue.components;
 
+import com.badlogic.gdx.physics.box2d.Body;
 import com.sad.function.rogue.objects.Tile;
 import com.sad.function.rogue.systems.EntityManager;
 
@@ -9,6 +10,7 @@ public class MoverComponent extends Component {
     private EntityManager manager;
     private UUID target;
 
+    private float WORLD_TO_BOX = 1/16f;
     public MoverComponent(EntityManager manager, UUID target) {
         this.manager = manager;
         this.target = target;

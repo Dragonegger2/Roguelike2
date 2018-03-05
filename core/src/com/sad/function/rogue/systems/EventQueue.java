@@ -1,6 +1,6 @@
 package com.sad.function.rogue.systems;
 
-import com.sad.function.rogue.event.IEvent;
+import com.sad.function.rogue.IEvent;
 
 import java.util.LinkedList;
 

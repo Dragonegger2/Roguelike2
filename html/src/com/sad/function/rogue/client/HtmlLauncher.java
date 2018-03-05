@@ -3,7 +3,7 @@ package com.sad.function.rogue.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.sad.function.rogue.screens.RogueLikeScreen;
+import com.sad.function.rogue.RogueLikeGame;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -46,6 +46,6 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener createApplicationListener () {
-                return new RogueLikeScreen();
+                return new RogueLikeGame();
         }
 }
