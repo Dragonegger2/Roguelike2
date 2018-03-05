@@ -19,7 +19,6 @@ import com.sad.function.rogue.systems.RenderSystem;
 import com.sad.function.rogue.systems.input.Action;
 import com.sad.function.rogue.systems.input.GameContext;
 import com.sad.function.rogue.systems.input.KeyBoardGameInput;
-import org.omg.CORBA.portable.Delegate;
 
 import java.util.UUID;
 
