@@ -4,18 +4,18 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.rogue.screens.BaseScreen;
-import com.sad.function.rogue.screens.RogueLikeScreen;
 
 public class RogueLikeGame extends ApplicationAdapter {
 
 	SpriteBatch batch;
 
 	BaseScreen gameScreen;
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 
-		gameScreen = new RogueLikeScreen();
+//		gameScreen = new RogueLikeScreen();
     }
 
 	@Override

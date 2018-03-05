@@ -1,59 +1,92 @@
 package com.sad.function.rogue.screens;
 
-import box2dLight.PointLight;
-import box2dLight.RayHandler;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
-import com.sad.function.rogue.DungeonToPhysicsWorld;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.rogue.FollowEntityCamera;
+import com.sad.function.rogue.components.Light;
 import com.sad.function.rogue.components.MapComponent;
 import com.sad.function.rogue.components.MoverComponent;
-import com.sad.function.rogue.components.PhysicsComponent;
-import com.sad.function.rogue.components.PlayerComponent;
+import com.sad.function.rogue.components.TransformComponent;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
-import com.sad.function.rogue.systems.RenderingSystem;
+import com.sad.function.rogue.systems.LightingSystem;
+import com.sad.function.rogue.systems.RenderSystem;
 import com.sad.function.rogue.systems.input.Action;
 import com.sad.function.rogue.systems.input.GameContext;
 import com.sad.function.rogue.systems.input.KeyBoardGameInput;
 
 import java.util.UUID;
 
-public class RogueLikeScreen implements BaseScreen{
-    private static final float BOX_TO_WORLD = 16;
-    private static final float WORLD_TO_BOX = 1/16;
+public class RogueLikeScreen implements ApplicationListener {
 
     //Entity Manager Stuff.
     private EntityManager entityManager;
 
-    //BOX2D Stuff
-    private World world = new World(new Vector2(0, 0), false);
 
-    private RayHandler rayHandler;
-
-    //World Camera
     private FollowEntityCamera camera;
-    private PerspectiveCamera uiCamera;
-    //TODO: Create another camera for UI rendering.
-
-    //TODO: Turn this into a generator/emitter.
-    private DungeonToPhysicsWorld dTPWorld;
-
-    private Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
     private GameContext contextList = new GameContext();
 
-    UUID playerUUID;
-    UUID mapUUID;
-    public RogueLikeScreen() {
+    private UUID playerUUID;
+    private UUID mapUUID;
+
+    private Batch batch;
+
+    public void processInput() {
+        if(contextList.value("LEFT") > 0) {
+            entityManager.getComponent(playerUUID, MoverComponent.class).moveOrAttack(-1, 0, entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
+        }
+        //Camera controls.
+        if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+            camera.zoom = camera.zoom / 2;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+            camera.zoom *= 2;
+        }
+    }
+
+    /**
+     * Sets up this current game context and it's actions.
+     */
+    private void setupActions() {
+        contextList = new GameContext();
+
+        contextList.registerActionToContext("LEFT",
+            new Action(
+              new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.LEFT),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.A)
+            )
+        );
+
+        contextList.registerActionToContext("RIGHT",
+            new Action(
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.RIGHT),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.D)
+            )
+        );
+
+        contextList.registerActionToContext("UP",
+            new Action(
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.UP),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.W)
+            )
+        );
+
+        contextList.registerActionToContext("DOWN",
+            new Action(
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.DOWN),
+                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_JUST_PRESSED, Input.Keys.S)
+            )
+        );
+    }
+
+    @Override
+    public void create() {
         setupActions();
 
         entityManager = new EntityManager();
@@ -66,123 +99,51 @@ public class RogueLikeScreen implements BaseScreen{
         entityManager.addComponent(mapUUID, new MapComponent(entityManager));
         entityManager.getComponent(mapUUID, MapComponent.class).generateDungeon();
 
-        //Multiply the height  by aspect ratio.
+        camera = new FollowEntityCamera(80 * 4, 50 * 4, playerUUID, entityManager);
 
-        dTPWorld = new DungeonToPhysicsWorld(entityManager.getComponent(mapUUID, MapComponent.class), world);
-        dTPWorld.GeneratePhysicsBodies(entityManager);
+        entityManager.addComponent(playerUUID, new Light(10, Color.WHITE, "light3.png"));
 
-        rayHandler = new RayHandler(world);
-        rayHandler.setShadows(true);
-        rayHandler.useDiffuseLight(true);
+        UUID lights = entityManager.createEntity();
+        entityManager.addComponent(lights, new TransformComponent(0,0));
+        entityManager.addComponent(lights, new Light(100, Color.RED, "light3.png"));
 
-        //TODO: Add a tweening function that will slowly flicker the lights be modifying the distances.
-        new PointLight(rayHandler, 32, Color.YELLOW, 15, 0,0 ).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
-//        new PointLight(rayHandler, 16, Color.RED, 7, 0,0).attachToBody(entityManager.getComponent(playerUUID, PhysicsComponent.class).body);
-
-        camera = new FollowEntityCamera(80, 50, playerUUID, entityManager);
-        camera.zoom /= 4;
+        batch = new SpriteBatch();
     }
 
-    public void processInput() {
-
-        float VELOCITY = 10f;
-
-        Vector2 newVelocity = new Vector2(0,0);
-
-        if(contextList.value("LEFT") > 0 ){
-            newVelocity.x = -VELOCITY;
-        }
-        else if( contextList.value("RIGHT") > 0 ) {
-            newVelocity.x = VELOCITY;
-        }
-        else {
-            newVelocity.x = 0;
-        }
-
-        if( contextList.value("UP")  > 0) {
-            newVelocity.y = VELOCITY;
-        }
-        else if( contextList.value("DOWN")  > 0) {
-            newVelocity.y = -VELOCITY;
-        }
-        else {
-            newVelocity.y = 0;
-        }
-
-        //Camera controls.
-        if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
-            camera.zoom = camera.zoom / 2;
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
-            camera.zoom *= 2;
-        }
-
-        entityManager.getComponent(entityManager.getAllEntitiesPossessingComponent(PlayerComponent.class).iterator().next(), MoverComponent.class).moveOrAttack(newVelocity.x, newVelocity.y);
+    @Override
+    public void resize(int width, int height) {
+        LightingSystem.getInstance().resize(width, height);
     }
 
-    public void update(float delta) {
-    }
+    @Override
+    public void render() {
+        //process input
+        processInput();
 
-    public void render(Batch batch) {
-        //Step the physics simulation.
-        world.step(1/60f, 6, 2);
+        //updateGame
 
-        //Update the project matrix and then set the batch project matrix.
+        //render
+
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
-        //Clear buffer before rendering.
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //Render all game entities.
+        RenderSystem.getInstance().render(batch, entityManager);
 
-        //Render box2d world.
-        batch.begin();
-            RenderingSystem.run(batch, entityManager);
-        batch.end();
-
-        rayHandler.setCombinedMatrix(camera);
-        rayHandler.updateAndRender();
+        LightingSystem.getInstance().renderLighting(batch, entityManager, camera);
     }
 
-    /**
-     * Sets up this current game context and it's actions.
-     */
-    private void setupActions() {
-        contextList = new GameContext();
+    @Override
+    public void pause() {
+    }
 
-        contextList.registerActionToContext("LEFT",
-            new Action(
-              new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.LEFT),
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.A)
-            )
-        );
+    @Override
+    public void resume() {
 
-        contextList.registerActionToContext("RIGHT",
-            new Action(
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.RIGHT),
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.D)
-            )
-        );
-
-        contextList.registerActionToContext("UP",
-            new Action(
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.UP),
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.W)
-            )
-        );
-
-        contextList.registerActionToContext("DOWN",
-            new Action(
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.DOWN),
-                new KeyBoardGameInput(KeyBoardGameInput.STATE.IS_KEY_PRESSED, Input.Keys.S)
-            )
-        );
     }
 
     @Override
     public void dispose() {
-        world.dispose();
-        rayHandler.dispose();
         AssetManager.getInstance().dispose();
     }
 }

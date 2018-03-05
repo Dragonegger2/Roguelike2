@@ -135,6 +135,7 @@ public class DungeonGenerator {
             //TODO:Roll for monster creation.
             MonsterBuilder builder = new MonsterBuilder(entityManager);
 
+
             builder.setBlocks(true).setX(x).setY(y).setTextureLocation("goblin.png").createMonster();
         }
     }
