@@ -1,4 +1,4 @@
-package com.sad.function.rogue.systems.input;
+package com.sad.function.rogue.input;
 
 /**
  * Represents an object that defines how the input is handled.
