@@ -16,9 +16,9 @@ import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
 import com.sad.function.rogue.systems.LightingSystem;
 import com.sad.function.rogue.systems.RenderSystem;
-import com.sad.function.rogue.systems.input.Action;
-import com.sad.function.rogue.systems.input.GameContext;
-import com.sad.function.rogue.systems.input.KeyBoardGameInput;
+import com.sad.function.rogue.input.Action;
+import com.sad.function.rogue.input.GameContext;
+import com.sad.function.rogue.input.KeyBoardGameInput;
 
 import java.util.UUID;
 

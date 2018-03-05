@@ -1,4 +1,4 @@
-package com.sad.function.rogue.systems.input;
+package com.sad.function.rogue.input;
 
 import java.util.HashMap;
 import java.util.Map;

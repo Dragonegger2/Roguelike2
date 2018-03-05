@@ -1,4 +1,4 @@
-package com.sad.function.rogue.systems.input;
+package com.sad.function.rogue.input;
 
 import com.badlogic.gdx.Gdx;
 
