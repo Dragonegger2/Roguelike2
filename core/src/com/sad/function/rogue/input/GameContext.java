@@ -32,6 +32,10 @@ public class GameContext {
      * @return
      */
     public float value(String actionName) {
-        return mappedContexts.get(actionName).value();
+        //return mappedContexts.get(actionName).value();
+        if(mappedContexts.get(actionName).value() != null) {
+            return 1;
+        }
+        return 0;
     }
 }
