@@ -1,6 +1,5 @@
 package com.sad.function.rogue.components;
 
-import com.badlogic.gdx.physics.box2d.Body;
 import com.sad.function.rogue.objects.Tile;
 import com.sad.function.rogue.systems.EntityManager;
 
@@ -18,10 +17,6 @@ public class MoverComponent extends Component {
 
     public void moveOrAttack(int dx, int dy, Tile[][] map) {
         //If you aren't blocked by a blocking thing.
-            if (!map[manager.getComponent(target, TransformComponent.class).x + dx][manager.getComponent(target, TransformComponent.class).y + dy].blocked) {
-                manager.getComponent(target, TransformComponent.class).x += dx;
-                manager.getComponent(target, TransformComponent.class).y += dy;
 
-            }
     }
 }

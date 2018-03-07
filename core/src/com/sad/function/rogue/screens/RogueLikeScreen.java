@@ -9,16 +9,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.rogue.FollowEntityCamera;
 import com.sad.function.rogue.components.Light;
 import com.sad.function.rogue.components.MapComponent;
-import com.sad.function.rogue.components.MoverComponent;
 import com.sad.function.rogue.components.TransformComponent;
+import com.sad.function.rogue.event.ICommand;
+import com.sad.function.rogue.input.Action;
+import com.sad.function.rogue.input.GameContext;
+import com.sad.function.rogue.input.InputHandler;
+import com.sad.function.rogue.input.KeyBoardGameInput;
 import com.sad.function.rogue.objects.builder.PlayerBuilder;
 import com.sad.function.rogue.systems.AssetManager;
 import com.sad.function.rogue.systems.EntityManager;
 import com.sad.function.rogue.systems.LightingSystem;
 import com.sad.function.rogue.systems.RenderSystem;
-import com.sad.function.rogue.input.Action;
-import com.sad.function.rogue.input.GameContext;
-import com.sad.function.rogue.input.KeyBoardGameInput;
 
 import java.util.UUID;
 
@@ -36,11 +37,16 @@ public class RogueLikeScreen implements ApplicationListener {
     private UUID mapUUID;
 
     private Batch batch;
+    private InputHandler gameContext;
 
     public void processInput() {
-        if(contextList.value("LEFT") > 0) {
-            entityManager.getComponent(playerUUID, MoverComponent.class).moveOrAttack(-1, 0, entityManager.getComponent(mapUUID, MapComponent.class).dungeon.map);
+
+        ICommand inputCommand = gameContext.handleInput();
+
+        if(inputCommand != null ) {
+            gameContext.handleInput().Execute(entityManager, playerUUID);
         }
+
         //Camera controls.
         if(Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
             camera.zoom = camera.zoom / 2;
@@ -87,7 +93,8 @@ public class RogueLikeScreen implements ApplicationListener {
 
     @Override
     public void create() {
-        setupActions();
+//        setupActions();
+        gameContext = new InputHandler();
 
         entityManager = new EntityManager();
         mapUUID = entityManager.createEntity();
