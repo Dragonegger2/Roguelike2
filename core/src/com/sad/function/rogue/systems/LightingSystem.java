@@ -7,14 +7,10 @@ package com.sad.function.rogue.systems;
  *
  */
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sad.function.rogue.Globals;
 import com.sad.function.rogue.components.Light;
 import com.sad.function.rogue.components.TransformComponent;
@@ -27,7 +23,7 @@ import java.util.UUID;
  */
 public class LightingSystem {
 
-    private static FrameBuffer frameBuffer;
+//    private static FrameBuffer frameBuffer;
 
     private static LightingSystem _instance;
     private static Color shadeColor = new Color(0.3f,0.3f,0.3f,.9f);
@@ -44,18 +40,18 @@ public class LightingSystem {
      * @param height
      */
     public void resize(int width, int height) {
-        if(frameBuffer !=null && (frameBuffer.getWidth()!=width || frameBuffer.getHeight()!=height )) {
-            frameBuffer.dispose();
-            frameBuffer=null;
-        }
-
-        if(frameBuffer==null){
-            try {
-                frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
-            }catch (GdxRuntimeException e){
-                frameBuffer=new FrameBuffer(Pixmap.Format.RGB565,(int) Math.pow(width, 2), (int) Math.pow(height, 2),false);
-            }
-        }
+//        if(frameBuffer !=null && (frameBuffer.getWidth()!=width || frameBuffer.getHeight()!=height )) {
+//            frameBuffer.dispose();
+//            frameBuffer=null;
+//        }
+//
+//        if(frameBuffer==null){
+//            try {
+//                frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+//            }catch (GdxRuntimeException e){
+//                frameBuffer=new FrameBuffer(Pixmap.Format.RGB565,(int) Math.pow(width, 2), (int) Math.pow(height, 2),false);
+//            }
+//        }
 
     }
 
@@ -68,9 +64,9 @@ public class LightingSystem {
 
     public void renderLighting(Batch batch, EntityManager em, Camera camera) {
 
-        frameBuffer.begin();
-            Gdx.gl.glClearColor(shadeColor.r, shadeColor.g, shadeColor.b, shadeColor.a);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//        frameBuffer.begin();
+//            Gdx.gl.glClearColor(shadeColor.r, shadeColor.g, shadeColor.b, shadeColor.a);
+//            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
             // setup the right blending
 
             batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
@@ -87,7 +83,7 @@ public class LightingSystem {
                 }
 
             batch.end();
-        frameBuffer.end();
+//        frameBuffer.end();
 
 
         batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
@@ -96,13 +92,13 @@ public class LightingSystem {
          * The important thing to remember here about the frameBuffer is that the lights are drawn at their respective
          * camera coordinates and are visible with the fb between them and the sprites below.
          */
-        batch.begin();
+/*        batch.begin();
 
             batch.draw(frameBuffer.getColorBufferTexture(),
                     camera.position.x - frameBuffer.getColorBufferTexture().getWidth()/2,
                     camera.position.y - frameBuffer.getColorBufferTexture().getHeight()/2
             );
 
-        batch.end();
+        batch.end();*/
     }
 }
