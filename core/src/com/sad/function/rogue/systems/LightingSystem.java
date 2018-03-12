@@ -80,7 +80,6 @@ public class LightingSystem {
 
                     batch.setColor(em.getComponent(entity, Light.class).color);
 
-                    //TODO: Current lighting bugs exist here:
                     batch.draw(em.getComponent(entity, Light.class).source,
                             em.getComponent(entity, TransformComponent.class).x * 16 - em.getComponent(entity, Light.class).source.getWidth() / 2,
                             em.getComponent(entity,TransformComponent.class).y * 16 - em.getComponent(entity, Light.class).source.getHeight() / 2);
@@ -93,7 +92,7 @@ public class LightingSystem {
 
         batch.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO);
 
-        /**
+        /*
          * The important thing to remember here about the frameBuffer is that the lights are drawn at their respective
          * camera coordinates and are visible with the fb between them and the sprites below.
          */

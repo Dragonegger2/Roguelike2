@@ -46,9 +46,11 @@ public class RenderSystem {
     }
 
     public void render(Batch batch, EntityManager em) {
+        Gdx.gl.glClearColor(Color.WHITE.r, Color.WHITE.g, Color.WHITE.b, Color.WHITE.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        batch.setColor(Color.WHITE);
 
         batch.begin();
 
@@ -69,7 +71,6 @@ public class RenderSystem {
                 map[x][y].explored = true;
             }
         }
-
         //            Render all objects to the screen before applying lights.
         for(UUID entity : em.getAllEntitiesPossessingComponents(new Class[] {SpriteComponent.class, TransformComponent.class})) {
 
