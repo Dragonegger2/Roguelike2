@@ -54,6 +54,9 @@ public class RogueLikeScreen implements ApplicationListener {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             isLighting = !isLighting;
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            Gdx.app.exit();
+        }
     }
 
     @Override
@@ -72,7 +75,7 @@ public class RogueLikeScreen implements ApplicationListener {
 
         camera = new FollowEntityCamera(80 * 4, 50 * 4, playerUUID, entityManager);
 
-        entityManager.addComponent(playerUUID, new Light(10, Color.WHITE, "light3.png"));
+        entityManager.addComponent(playerUUID, new Light(10, Color.RED, "light3.png"));
 
         UUID lights = entityManager.createEntity();
         entityManager.addComponent(lights, new TransformComponent(0,0));
