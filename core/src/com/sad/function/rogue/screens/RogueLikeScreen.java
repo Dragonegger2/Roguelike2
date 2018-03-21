@@ -75,7 +75,7 @@ public class RogueLikeScreen implements ApplicationListener {
 
         camera = new FollowEntityCamera(80 * 4, 50 * 4, playerUUID, entityManager);
 
-        entityManager.addComponent(playerUUID, new Light(10, Color.RED, "light3.png"));
+        entityManager.addComponent(playerUUID, new Light(10, Color.WHITE, "light3.png"));
 
         UUID lights = entityManager.createEntity();
         entityManager.addComponent(lights, new TransformComponent(0,0));

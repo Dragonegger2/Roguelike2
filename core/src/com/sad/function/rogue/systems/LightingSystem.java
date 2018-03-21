@@ -8,14 +8,11 @@ package com.sad.function.rogue.systems;
  */
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.sad.function.rogue.Globals;
 import com.sad.function.rogue.components.Light;
 import com.sad.function.rogue.components.TransformComponent;
 
@@ -31,10 +28,10 @@ public class LightingSystem {
 
     private static LightingSystem _instance;
     private static Color shadeColor = new Color(0.3f,0.3f,0.3f,.9f);
+    private static OrthographicCamera camera;
 
-
-    private LightingSystem(int width, int height) {
-        resize(width, height);
+    private LightingSystem() {
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     /**
@@ -56,18 +53,22 @@ public class LightingSystem {
                 frameBuffer=new FrameBuffer(Pixmap.Format.RGB565,(int) Math.pow(width, 2), (int) Math.pow(height, 2),false);
             }
         }
-
+        camera = new OrthographicCamera(frameBuffer.getWidth(), frameBuffer.getHeight());
+        camera.setToOrtho(false);
     }
 
     public static LightingSystem getInstance() {
         if(_instance == null) {
-            _instance = new LightingSystem(Globals.screenWidth, Globals.screenHeight);
+            _instance = new LightingSystem();
         }
         return _instance;
     }
 
-    public void renderLighting(Batch batch, EntityManager em, Camera camera) {
+    private static Vector3 tmpLocation = new Vector3();
 
+    public void renderLighting(Batch batch, EntityManager em, Camera camera) {
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
         frameBuffer.begin();
             Gdx.gl.glClearColor(shadeColor.r, shadeColor.g, shadeColor.b, shadeColor.a);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -79,12 +80,24 @@ public class LightingSystem {
                     // set the color of your light (red,green,blue,alpha values)
 
                     batch.setColor(em.getComponent(entity, Light.class).color);
+                    tmpLocation.x = em.getComponent(entity, TransformComponent.class).x* 16;
+                    tmpLocation.y = em.getComponent(entity, TransformComponent.class).y * 16;
+                    tmpLocation.z = 0;
+                    tmpLocation = camera.unproject(tmpLocation);
+
+
+                    tmpLocation.x -= em.getComponent(entity, Light.class).source.getWidth() / 2;
+                    tmpLocation.y -= em.getComponent(entity, Light.class).source.getHeight() / 2;
 
                     batch.draw(em.getComponent(entity, Light.class).source,
-                            em.getComponent(entity, TransformComponent.class).x * 16 - em.getComponent(entity, Light.class).source.getWidth() / 2,
-                            em.getComponent(entity,TransformComponent.class).y * 16 - em.getComponent(entity, Light.class).source.getHeight() / 2);
+                            tmpLocation.x,
+                            tmpLocation.y);
                     batch.setColor(Color.WHITE); //White is the default color. If you don't, we'll get bleeding issues.
                 }
+                /*
+                    em.getComponent(entity, TransformComponent.class).x * 16 - em.getComponent(entity, Light.class).source.getWidth() / 2,
+                    em.getComponent(entity,TransformComponent.class).y * 16 - em.getComponent(entity, Light.class).source.getHeight() / 2);
+                */
 
             batch.end();
         frameBuffer.end();
