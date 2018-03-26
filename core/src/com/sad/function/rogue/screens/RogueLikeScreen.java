@@ -36,6 +36,8 @@ public class RogueLikeScreen implements ApplicationListener {
 
     private boolean isLighting = false;
 
+    //TODO: Make all the transforms work based on centers?
+   //Krhakhrohctep
     private void processInput() {
 
         ICommand inputCommand = gameContext.handleInput();
